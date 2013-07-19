@@ -20,6 +20,13 @@ class StackEmptyException: public exception
 	}
 };
 
+/**
+ * Implements three stacks using a single array.
+ * Allows you to push/pop from any of the three stacks.
+ * Time complexity: O(1) for all operations in general, but some push operations
+ * can be slow when the the array size has to be enhanced.
+ * Space complexity: O(n)
+ */
 template<class T>
 class ThreeStack
 {
@@ -65,7 +72,7 @@ void ThreeStack<T>::push(int stackNo, T data)
 	{
 		T *temp = arr;
 		arr = new T[2*currentArraySize];
-		memcpy(temp, arr, sizeof(temp));
+		memcpy(arr, temp, sizeof(T)*currentArraySize);
 		delete[] temp;
 	}
 	arr[nextTop] = data;

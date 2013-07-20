@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <queue>
 #include <cmath>
+#include "linked_lists.h"
 
 using namespace std;
 
@@ -61,54 +62,108 @@ public:
 	}
 
 	bool operator==(const TreeNode<T> &other);
+	bool operator!=(const TreeNode<T> &other);
+	bool operator<(const TreeNode<T> &other);
+	bool operator>(const TreeNode<T> &other);
 };
 
+/**
+ * Represents a binary tree data structure.
+ * Implements several algorithms related to binary trees.
+ * This internally stores two representations of the binary tree:
+ * One is normal tree representation with nodes and links between nodes
+ * and the other is an array of nodes in breadth-first-search order.
+ */
 template<class T>
 class BinaryTree
 {
 	int getParentIndex(int childIndex);
 	int getLeftChildIndex(int parentIndex);
 	int getRightChildIndex(int parentIndex);
-	void traverseInOrder(TreeNode<T> * root);
-	void traversePreOrder(TreeNode<T> * root);
-	void traversePostOrder(TreeNode<T> * root);
+	void traverseInOrder(TreeNode<T> * root, vector<T> &inorderList);
+	void traversePreOrder(TreeNode<T> * root, vector<T> &preorderList);
+	void traversePostOrder(TreeNode<T> * root, vector<T> &postorderList);
 	TreeNode<T> * reconstructTree(vector<T> * inorderList,
 								  vector<T> * preorderList);
 	int getHeight(TreeNode<T> * root, bool &isBalanced);
 	bool dfsBSTCheck(TreeNode<T> * node);
+	TreeNode<T> * findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T> * q, TreeNode<T> * root);
 protected:
 	vector<TreeNode<T> * > * nodeArray;
 	TreeNode<T> * root;
 public:
+	/**
+	 * Constructs an empty binary tree.
+	 */
 	BinaryTree();
 
+	/**
+	 * Constructs a binary tree with only one node which becomes the root node.
+	 */
 	BinaryTree(TreeNode<T> * root);
 
+	/**
+	 * Constructs a binary tree with nodes created from a list of values.
+	 * The nodes are arranged in the tree in breadth-first order.
+	 */
 	BinaryTree(vector<T> * nodeList);
 
+	/**
+	 * Reconstructs a binary tree from two lists - inorderList and preorderList
+	 * where these lists are the list of nodes converted from inorder and
+	 * preorder traversals of the same tree.
+	 */
 	BinaryTree(vector<T> * inorderList, vector<T> * preorderList);
 
-	void printInOrder();
+	/**
+	 * Traverses the tree inorder and then prints the nodes. It also
+	 * fills the vector with the nodes in same order.
+	 */
+	void printInOrder(vector<T> &inorderList);
 
-	void printInOrderNoRecurse();
+	/**
+	 * Traverses the tree inorder without using recursion and then prints
+	 * the nodes. It also fills the vector with the nodes in same order.
+	 */
+	void printInOrderNoRecurse(vector<T> &inorderList);
 
-	void printPreOrder();
+	void printPreOrder(vector<T> &preorderList);
 
-	void printPreOrderNoRecurse();
+	void printPreOrderNoRecurse(vector<T> &preorderList);
 
-	void printPostOrder();
+	void printPostOrder(vector<T> &postorderList);
 
-	void printPostOrderNoRecurse();
+	void printPostOrderNoRecurse(vector<T> &postorderList);
 
-	void printNormal();
+	void printNormal(vector<T> &normalorderList);
 
 	void appendNode(TreeNode<T> * newNode);
 
+	/**
+	 * Returns true if the binary tree is balanced.
+	 * The height of the binary tree is put in the height variable.
+	 */
 	bool isBalanced(int &height);
 
+	/**
+	 * Gets different levels in the binary tree as a vector of
+	 * linked lists. Each linked list is a list of siblings at that level.
+	 * That is the list at index 0 is root, list at index 1 contains two
+	 * nodes at level 2.
+	 */
 	vector<LinkedList<TreeNode<T> * > * > * getLevels();
 
+	/**
+	 * Returns true if this binary tree is a binary search tree.
+	 */
 	bool isBST();
+
+	/**
+	 * Finds and returns first common ancestore of given nodes p and q.
+	 * Time complexity: O(n)
+	 * Space complexity: O(1)
+	 */
+	TreeNode<T> * findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q);
 };
 
 template<class T>
@@ -133,6 +188,24 @@ template<class T>
 bool TreeNode<T>::operator==(const TreeNode<T> &other)
 {
 	return val == other.val;
+}
+
+template<class T>
+bool TreeNode<T>::operator!=(const TreeNode<T> &other)
+{
+	return !(val == other.val);
+}
+
+template<class T>
+bool TreeNode<T>::operator<(const TreeNode<T> &other)
+{
+	return val < other.val;
+}
+
+template<class T>
+bool TreeNode<T>::operator>(const TreeNode<T> &other)
+{
+	return val > other.val;
 }
 
 template<class T>
@@ -296,52 +369,54 @@ TreeNode<T> * BinaryTree<T>::reconstructTree(vector<T> * inorderList, vector<T> 
 }
 
 template<class T>
-void BinaryTree<T>::traverseInOrder(TreeNode<T> * root)
+void BinaryTree<T>::traverseInOrder(TreeNode<T> * root, vector<T> &inorderList)
 {
 	if(!root)
 	{
 		return;
 	}
-	traverseInOrder(root->getLeft());
+	traverseInOrder(root->getLeft(), inorderList);
 	cout << root->getValue() << " ";
-	traverseInOrder(root->getRight());
+	inorderList.push_back(root->getValue());
+	traverseInOrder(root->getRight(), inorderList);
 }
 
 template<class T>
-void BinaryTree<T>::traversePostOrder(TreeNode<T> * root)
+void BinaryTree<T>::traversePostOrder(TreeNode<T> * root, vector<T> &postorderList)
 {
 	if(!root)
 	{
 		return;
 	}
-	traversePostOrder(root->getLeft());
-	traversePostOrder(root->getRight());
+	traversePostOrder(root->getLeft(), postorderList);
+	traversePostOrder(root->getRight(), postorderList);
 	cout << root->getValue() << " ";
+	postorderList.push_back(root->getValue());
 }
 
 template<class T>
-void BinaryTree<T>::printInOrder()
+void BinaryTree<T>::printInOrder(vector<T> &inorderList)
 {
-	traverseInOrder(root);
+	traverseInOrder(root, inorderList);
 	cout << endl;
 }
 
 template<class T>
-void BinaryTree<T>::printPreOrder()
+void BinaryTree<T>::printPreOrder(vector<T> &preorderList)
 {
-	traversePreOrder(root);
+	traversePreOrder(root, preorderList);
 	cout << endl;
 }
 
 template<class T>
-void BinaryTree<T>::printPostOrder()
+void BinaryTree<T>::printPostOrder(vector<T> &postorderList)
 {
-	traversePostOrder(root);
+	traversePostOrder(root, postorderList);
 	cout << endl;
 }
 
 template<class T>
-void BinaryTree<T>::printInOrderNoRecurse()
+void BinaryTree<T>::printInOrderNoRecurse(vector<T> &inorderList)
 {
 	stack<TreeNode<T> * > * nodeStack = new stack<TreeNode<T> * >;
 	nodeStack->push(root);
@@ -353,6 +428,7 @@ void BinaryTree<T>::printInOrderNoRecurse()
 		{
 			cout << topNode->getValue() << " ";
 			topNode->resetVisited();
+			inorderList.push_back(topNode->getValue());
 		}
 		else
 		{
@@ -372,19 +448,20 @@ void BinaryTree<T>::printInOrderNoRecurse()
 }
 
 template<class T>
-void BinaryTree<T>::traversePreOrder(TreeNode<T> * n)
+void BinaryTree<T>::traversePreOrder(TreeNode<T> * n, vector<T> &preorderList)
 {
 	if(!n)
 	{
 		return;
 	}
 	cout << n->getValue() << " ";
-	traversePreOrder(n->getLeft());
-	traversePreOrder(n->getRight());
+	preorderList.push_back(n->getValue());
+	traversePreOrder(n->getLeft(), preorderList);
+	traversePreOrder(n->getRight(), preorderList);
 }
 
 template<class T>
-void BinaryTree<T>::printPreOrderNoRecurse()
+void BinaryTree<T>::printPreOrderNoRecurse(vector<T> &preorderList)
 {
 	stack<TreeNode<T> *> * nodeStack = new stack<TreeNode<T> *>;
 	nodeStack->push(root);
@@ -409,13 +486,14 @@ void BinaryTree<T>::printPreOrderNoRecurse()
 		{
 			cout << top->getValue() << " ";
 			top->resetVisited();
+			preorderList.push_back(top->getValue());
 		}
 	}
 	cout << endl;
 }
 
 template<class T>
-void BinaryTree<T>::printPostOrderNoRecurse()
+void BinaryTree<T>::printPostOrderNoRecurse(vector<T> &postorderList)
 {
 	stack<TreeNode<T> *> * nodeStack = new stack<TreeNode<T> *>;
 	nodeStack->push(root);
@@ -440,12 +518,13 @@ void BinaryTree<T>::printPostOrderNoRecurse()
 		{
 			cout << top->getValue() << " ";
 			top->resetVisited();
+			postorderList.push_back(top->getValue());
 		}
 	}
 }
 
 template<class T>
-void BinaryTree<T>::printNormal()
+void BinaryTree<T>::printNormal(vector<T> &normalorderList)
 {
 	queue<TreeNode<T> * > * bfsqueue = new queue<TreeNode<T> * >;
 	bfsqueue->push(root);
@@ -454,6 +533,7 @@ void BinaryTree<T>::printNormal()
 		TreeNode<T> * front = bfsqueue->front();
 		bfsqueue->pop();
 		cout << front->getValue() << " ";
+		normalorderList.push_back(front->getValue());
 		if(front->getLeft())
 		{
 			bfsqueue->push(front->getLeft());
@@ -542,6 +622,58 @@ int BinaryTree<T>::getHeight(TreeNode<T> * node, bool &balanced)
 }
 
 template<class T>
+TreeNode<T> * BinaryTree<T>::findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q)
+{
+	return findFirstCommonAncestor(p, q, root);
+}
+
+template<class T>
+TreeNode<T> * BinaryTree<T>::findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T> * q, TreeNode<T> * root)
+{
+	// if root itself is p or q just return it
+	if(*root == *p || *root == *q)
+	{
+		return root;
+	}
+	TreeNode<T> * foundLeft = NULL, * foundRight = NULL;
+	if(root->getLeft())
+	{
+		// if there is a left child recursively find
+		foundLeft = findFirstCommonAncestor(p, q, root->getLeft());
+		if(foundLeft && *foundLeft != *p && *foundLeft != *q)
+		{
+			// the recursive call returned the first common ancestor
+			// just return it
+			return foundLeft;
+		}
+	}
+	if(root->getRight())
+	{
+		// if there is a right child recursively find
+		foundRight = findFirstCommonAncestor(p, q, root->getRight());
+		if(foundRight && *foundRight != *p && *foundRight != *q)
+		{
+			// the recursive call returned the first common ancestor
+			// just return it
+			return foundRight;
+		}
+	}
+	// either p and q are on either sides or only one of them is present in one of the sub trees
+	// or none of them is found
+	if(!foundLeft && !foundRight)
+	{
+		return NULL;
+	}
+	if(!foundLeft) return foundRight;
+	else if(!foundRight) return foundLeft;
+
+	// by now we know that both of them are not null and both of them are either p or q
+	// by assumption that the nodes are unique, we can just return the root here
+	// since root is the common ancestor
+	return root;
+}
+
+template<class T>
 class BST: public BinaryTree<T>
 {
 	TreeNode<T> * getBST(vector<T> * sortedArray);
@@ -549,6 +681,7 @@ class BST: public BinaryTree<T>
 public:
 	BST(vector<T> * sortedArray);
 	TreeNode<T> * getSuccessor(T nodeValue);
+	TreeNode<T> * findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q);
 };
 
 template<class T>
@@ -628,6 +761,26 @@ TreeNode<T> * BST<T>::getLeftMostChild(TreeNode<T> * node)
 		}
 	}
 	return temp;
+}
+
+template<class T>
+TreeNode<T> * BST<T>::findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q)
+{
+	TreeNode<T> * temp = BinaryTree<T>::root;
+	while(temp)
+	{
+		if(*p < *temp && *temp < *q)
+		{
+			return temp;
+		}
+		if(*temp < *p && *temp < *q)
+		{
+			temp = temp->getRight();
+		}
+		else {
+			temp = temp->getLeft();
+		}
+	}
 }
 
 template<class T>

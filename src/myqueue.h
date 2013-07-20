@@ -21,6 +21,9 @@ class EmptyQueueException: public exception
 	}
 };
 
+/**
+ * Implements a queue using two stacks.
+ */
 template<class T>
 class MyQueue
 {

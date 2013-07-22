@@ -43,6 +43,7 @@ public:
 	TreeNode();
 
 	T getValue();
+	void setValue(T val);
 	TreeNode<T> * getLeft();
 	TreeNode<T> * getRight();
 	TreeNode<T> * getParent();
@@ -67,6 +68,20 @@ public:
 	bool operator>(const TreeNode<T> &other);
 };
 
+template<class T>
+class SumPath {
+	vector<TreeNode<T> * > * elements;
+	T sum;
+
+public:
+	SumPath();
+	void appendToPath(TreeNode<T> * node);
+	void appendToPath(SumPath<T> * other);
+	T getSum();
+	vector<TreeNode<T> * > * getElements();
+	void print();
+};
+
 /**
  * Represents a binary tree data structure.
  * Implements several algorithms related to binary trees.
@@ -88,6 +103,10 @@ class BinaryTree
 	int getHeight(TreeNode<T> * root, bool &isBalanced);
 	bool dfsBSTCheck(TreeNode<T> * node);
 	TreeNode<T> * findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T> * q, TreeNode<T> * root);
+	TreeNode<T> * isSubTree(TreeNode<T> * source, TreeNode<T> * pattern);
+	bool matchTree(TreeNode<T> * source, TreeNode<T> * pattern);
+	vector<SumPath<T> * > * findAllPaths(TreeNode<T> * root, vector<SumPath<T> * > * results, T sum);
+	bool findRecurse(TreeNode<T> * node, T val, stack<TreeNode<T> * > *);
 protected:
 	vector<TreeNode<T> * > * nodeArray;
 	TreeNode<T> * root;
@@ -140,6 +159,12 @@ public:
 	void appendNode(TreeNode<T> * newNode);
 
 	/**
+	 * Finds a value in a binary tree and returns the path from root.
+	 * Returns NULL if val is not found.
+	 */
+	vector<TreeNode<T> * > * find(T val);
+
+	/**
 	 * Returns true if the binary tree is balanced.
 	 * The height of the binary tree is put in the height variable.
 	 */
@@ -164,6 +189,27 @@ public:
 	 * Space complexity: O(1)
 	 */
 	TreeNode<T> * findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q);
+
+	/**
+	 * Checks if the 'other' binary tree is a sub-tree of the current
+	 * binary tree and returns a pointer to the root of the sub-tree
+	 * if it is. Returns NULL otherwise.
+	 * Time complexity: O(k + nm) - where k is the number of matches of root node of other
+	 *                  in the current tree and n is the number of nodes in the current tree
+	 *                  and m is the number of nodes in the other tree.
+	 *                  NOTE: This is not a tight bound.
+	 * Space complexity: O(log(n) + log(m))
+	 */
+	TreeNode<T> * isSubTree(BinaryTree<T> * other);
+
+	TreeNode<T> * getRoot();
+
+	/**
+	 * Returns all possible paths in the binary tree whose node values sum up to a given sum.
+	 * Paths can bend around roots.
+	 * Time complexity: O(n)
+	 */
+	vector<SumPath<T> * > * findAllPathsWithSum(T sum);
 };
 
 template<class T>
@@ -212,6 +258,12 @@ template<class T>
 T TreeNode<T>::getValue()
 {
 	return val;
+}
+
+template<class T>
+void TreeNode<T>::setValue(T value)
+{
+	val = value;
 }
 
 template<class T>
@@ -342,9 +394,15 @@ BinaryTree<T>::BinaryTree(vector<T> * inorderList, vector<T> * preorderList)
 }
 
 template<class T>
+TreeNode<T> * BinaryTree<T>::getRoot()
+{
+	return root;
+}
+
+template<class T>
 TreeNode<T> * BinaryTree<T>::reconstructTree(vector<T> * inorderList, vector<T> * preorderList)
 {
-	typename vector<T>::iterator itr  = find(inorderList->begin(),
+	typename vector<T>::iterator itr  = std::find(inorderList->begin(),
 			                                 inorderList->end(),
 			                                 preorderList->at(0));
 	TreeNode<T> * currentRoot = new TreeNode<T>(*itr);
@@ -586,6 +644,41 @@ vector<LinkedList<TreeNode<T> * > * > * BinaryTree<T>::getLevels()
 }
 
 template<class T>
+vector<TreeNode<T> * > * BinaryTree<T>::find(T val)
+{
+	stack<TreeNode<T> * > * nodeStack = new stack<TreeNode<T> * >;
+	bool found = findRecurse(root, val, nodeStack);
+	if(!found) return NULL;
+	vector<TreeNode<T> * > * path = new vector<TreeNode<T> * >;
+	while(!nodeStack->empty())
+	{
+		path->push_back(nodeStack->top());
+		nodeStack->pop();
+	}
+	delete nodeStack;
+	return path;
+}
+
+template<class T>
+bool BinaryTree<T>::findRecurse(TreeNode<T> * node, T val, stack<TreeNode<T> * > * nodeStack)
+{
+	if(!node) {
+		return false;
+	}
+	nodeStack->push(node);
+	if(node->getValue() == val) {
+		return true;
+	}
+	if(findRecurse(node->getLeft(), val, nodeStack) ||
+			findRecurse(node->getRight(), val, nodeStack))
+	{
+		return true;
+	}
+	nodeStack->pop();
+	return false;
+}
+
+template<class T>
 bool BinaryTree<T>::isBalanced(int &height)
 {
 	bool balanced = false;
@@ -614,7 +707,7 @@ int BinaryTree<T>::getHeight(TreeNode<T> * node, bool &balanced)
 	{
 		balanced =true;
 	}
-	if(abs(leftHeight - rightHeight) > 0)
+	if(abs(leftHeight - rightHeight) > 1)
 	{
 		balanced = false;
 	}
@@ -674,14 +767,217 @@ TreeNode<T> * BinaryTree<T>::findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T
 }
 
 template<class T>
+bool BinaryTree<T>::matchTree(TreeNode<T> * source, TreeNode<T> * pattern)
+{
+	if(!pattern && !source) return true;
+	if(!pattern || !source) return false;
+	if(*pattern != *source) return false;
+	return matchTree(source->getLeft(), pattern->getLeft()) &&
+			matchTree(source->getRight(), pattern->getRight());
+}
+
+template<class T>
+TreeNode<T> * BinaryTree<T>::isSubTree(TreeNode<T> * source, TreeNode<T> * pattern)
+{
+	if(!pattern) return source;
+	if(matchTree(source, pattern)) return source;
+	if(source->getLeft())
+	{
+		TreeNode<T> * matchedRoot = isSubTree(source->getLeft(), pattern);
+		if(matchedRoot) return matchedRoot;
+	}
+	if(source->getRight()) {
+		TreeNode<T> * matchedRoot = isSubTree(source->getRight(), pattern);
+		if(matchedRoot) return matchedRoot;
+	}
+	return NULL;
+}
+
+template<class T>
+TreeNode<T> * BinaryTree<T>::isSubTree(BinaryTree<T> * other)
+{
+	if(!other) return root;
+	return isSubTree(root, other->getRoot());
+}
+
+template<class T>
+SumPath<T>::SumPath() {
+	elements = new vector<TreeNode<T> * >;
+	sum = 0;
+}
+
+template<class T>
+void SumPath<T>::appendToPath(TreeNode<T> * node) {
+	elements->push_back(node);
+	sum += node->getValue();
+}
+
+template<class T>
+void SumPath<T>::appendToPath(SumPath<T> * other) {
+	vector<TreeNode<T> * > * otherElements = other->getElements();
+	for(typename std::vector<TreeNode<T> * >::iterator it = otherElements->begin(); it != otherElements->end(); ++it)
+	{
+		elements->push_back(*it);
+		sum += (*it)->getValue();
+	}
+}
+
+template<class T>
+void SumPath<T>::print() {
+	for(typename std::vector<TreeNode<T> * >::iterator it = elements->begin(); it != elements->end(); ++it)
+	{
+		std::cout << (*it)->getValue() << " ";
+	}
+	std::cout << "Sum is: " << sum << std::endl;
+}
+
+template<class T>
+void printVector(vector<SumPath<T> * > * paths)
+{
+	for(typename std::vector<SumPath<T> * >::iterator it = paths->begin(); it != paths->end(); ++it)
+	{
+		(*it)->print();
+	}
+}
+
+template<class T>
+T SumPath<T>::getSum() {
+	return sum;
+}
+
+template<class T>
+vector<TreeNode<T> * > * SumPath<T>::getElements()
+{
+	return elements;
+}
+
+template<class T>
+vector<SumPath<T> * > * BinaryTree<T>::findAllPathsWithSum(T sum)
+{
+	vector<SumPath<T> * > * results = new vector<SumPath<T> * >;
+	findAllPaths(root, results, sum);
+	return results;
+}
+
+template<class T>
+vector<SumPath<T> * > * BinaryTree<T>::findAllPaths(TreeNode<T> * root, vector<SumPath<T> * > * results, T sum)
+{
+	vector<SumPath<T> * > * pathsEndingInLeftChild = NULL, * pathsEndingInRightChild = NULL;
+	vector<SumPath<T> * > * pathsEndingInCurrentNode = new vector<SumPath<T> * >;
+	SumPath<T> * singleElementResult = new SumPath<T>;
+	singleElementResult->appendToPath(root);
+
+	if(root->getValue() == sum) {
+		results->push_back(singleElementResult);
+	}
+	pathsEndingInCurrentNode->push_back(singleElementResult);
+
+	if(root->getLeft())
+	{
+		pathsEndingInLeftChild = findAllPaths(root->getLeft(), results, sum);
+	}
+	if(root->getRight())
+	{
+		pathsEndingInRightChild = findAllPaths(root->getRight(), results, sum);
+	}
+	if(pathsEndingInRightChild)
+	{
+		// there is at least one right child
+		for(typename std::vector<SumPath<T> * >::iterator it_right = pathsEndingInRightChild->begin(); it_right != pathsEndingInRightChild->end(); ++it_right)
+		{
+			SumPath<T> * newPath = new SumPath<T>;
+			newPath->appendToPath(*it_right);
+			newPath->appendToPath(root);
+			pathsEndingInCurrentNode->push_back(newPath);
+			if(newPath->getSum() == sum)
+			{
+				results->push_back(newPath);
+			}
+		}
+	}
+	if(pathsEndingInLeftChild)
+	{
+		for(typename std::vector<SumPath<T> * >::iterator it_left = pathsEndingInLeftChild->begin(); it_left != pathsEndingInLeftChild->end(); ++it_left)
+		{
+			SumPath<T> * newPath = new SumPath<T>;
+			newPath->appendToPath(*it_left);
+			newPath->appendToPath(root);
+			pathsEndingInCurrentNode->push_back(newPath);
+			if(newPath->getSum() == sum) {
+				results->push_back(newPath);
+			}
+		}
+	}
+	if(pathsEndingInLeftChild && pathsEndingInRightChild)
+	{
+		for(typename std::vector<SumPath<T> * >::iterator it_left = pathsEndingInLeftChild->begin(); it_left != pathsEndingInLeftChild->end(); ++it_left)
+		{
+			for(typename std::vector<SumPath<T> * >::iterator it_right = pathsEndingInRightChild->begin(); it_right != pathsEndingInRightChild->end(); ++it_right)
+			{
+				if((*it_left)->getSum() + root->getValue() + (*it_right)->getSum() == sum)
+				{
+					SumPath<T> * newPath = new SumPath<T>;
+					newPath->appendToPath(*it_left);
+					newPath->appendToPath(root);
+					newPath->appendToPath(*it_right);
+					results->push_back(newPath);
+				}
+			}
+		}
+	}
+	return pathsEndingInCurrentNode;
+}
+
+template<class T>
 class BST: public BinaryTree<T>
 {
 	TreeNode<T> * getBST(vector<T> * sortedArray);
 	TreeNode<T> * getLeftMostChild(TreeNode<T> * node);
 public:
+	/**
+	 * Constructs a binary search tree from a sorted array.
+	 * Time complexity: O(n)
+	 */
 	BST(vector<T> * sortedArray);
+	/**
+	 * Constructs a binary search tree from an unsorted array.
+	 * Time complexity: O(n)
+	 */
+	BST(vector<T> * array, bool unsorted);
+	/**
+	 * Returns the successor of a node with a given value.
+	 * Time complexity: O(log n)
+	 */
 	TreeNode<T> * getSuccessor(T nodeValue);
+	/**
+	 * Returns the successor of a given node.
+	 * Time complexity: O(log n)
+	 */
+	TreeNode<T> * getSuccessor(TreeNode<T> * node);
+
+	/**
+	 * Returns the least common ancestor of two given nodes.
+	 * Time complexity: O(log n)
+	 */
 	TreeNode<T> * findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q);
+
+	/**
+	 * Inserts a new node into the binary search tree while preserving the BST properties.
+	 * Time complexity: O(log n)
+	 */
+	void appendNode(TreeNode<T> * newNode);
+
+	/**
+	 * Searches for a given value in a binary search tree.
+	 * Time complexity: O(log n)
+	 */
+	TreeNode<T> * find(T val);
+
+	/**
+	 * Searches and removes a node with a given value in a binary search tree.
+	 * Time complexity: O(log n)
+	 */
+	void remove(T val);
 };
 
 template<class T>
@@ -689,6 +985,16 @@ BST<T>::BST(vector<T> * sortedArray)
 {
 	BinaryTree<T>::root = getBST(sortedArray);
 	vector<LinkedList<TreeNode<T> * > * > * levels = BinaryTree<T>::getLevels();
+}
+
+template<class T>
+BST<T>::BST(vector<T> * array, bool unsorted)
+{
+	for(typename std::vector<T>::iterator it = array->begin(); it != array->end(); ++it)
+	{
+		appendNode(new TreeNode<T>(*it));
+	}
+	BinaryTree<T>::getLevels();
 }
 
 template<class T>
@@ -714,18 +1020,15 @@ TreeNode<T> * BST<T>::getBST(vector<T> * sortedArray)
 }
 
 template<class T>
-TreeNode<T> * BST<T>::getSuccessor(T nodeValue)
+TreeNode<T> * BST<T>::getSuccessor(T nodeValue) {
+	TreeNode<T> * nodeToFind = find(nodeValue);
+	if(!nodeToFind) return NULL;
+	return getSuccessor(nodeToFind);
+}
+
+template<class T>
+TreeNode<T> * BST<T>::getSuccessor(TreeNode<T> * node)
 {
-	const TreeNode<T> nodeToFind(nodeValue);
-	typename vector<TreeNode<T> * >::iterator it =
-			std::find_if(BinaryTree<T>::nodeArray->begin(),
-				      	  BinaryTree<T>::nodeArray->end(),
-				      	  FindValFromPointer<TreeNode<T> >(nodeToFind));
-	if(it == BinaryTree<T>::nodeArray->end())
-	{
-		return NULL;
-	}
-	TreeNode<T> * node = *it;
 	if(node->getRight())
 	{
 		return getLeftMostChild(node->getRight());
@@ -743,6 +1046,48 @@ TreeNode<T> * BST<T>::getSuccessor(T nodeValue)
 		temp = temp->getParent();
 	}
 	return temp;
+}
+
+template<class T>
+void BST<T>::remove(T val) {
+	TreeNode<T> * nodeToRemove = find(val);
+	if(!nodeToRemove) {
+		return;
+	}
+	if(nodeToRemove->getLeft() && nodeToRemove->getRight()) {
+		TreeNode<T> * successor = getSuccessor(nodeToRemove);
+		nodeToRemove->setValue(successor->getValue());
+		TreeNode<T> * successorParent = successor->getParent();
+		successorParent->setLeft(successor->getRight());
+		if(successor->getRight()) {
+			successor->getRight()->setParent(successorParent);
+		}
+		delete successor;
+		return;
+	}
+	if(!nodeToRemove->getLeft() && !nodeToRemove->getRight()) {
+		TreeNode<T> * parent = nodeToRemove->getParent();
+		if(parent->getLeft() == nodeToRemove) {
+			parent->setLeft(NULL);
+		}
+		else {
+			parent->setRight(NULL);
+		}
+		delete nodeToRemove;
+		return;
+	}
+	TreeNode<T> * nodeToReplace = nodeToRemove->getLeft();
+	if(!nodeToReplace) {
+		nodeToReplace = nodeToRemove->getRight();
+	}
+	TreeNode<T> * parent = nodeToRemove->getParent();
+	if(parent->getLeft() == nodeToRemove) {
+		parent->setLeft(nodeToReplace);
+	}
+	else {
+		parent->setRight(nodeToReplace);
+	}
+	delete nodeToRemove;
 }
 
 template<class T>
@@ -781,6 +1126,58 @@ TreeNode<T> * BST<T>::findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q)
 			temp = temp->getLeft();
 		}
 	}
+}
+
+template<class T>
+void BST<T>::appendNode(TreeNode<T> * newNode)
+{
+	if(!BinaryTree<T>::root) {
+		BinaryTree<T>::root = newNode;
+		return;
+	}
+	TreeNode<T> * parent = BinaryTree<T>::root;
+	while(parent) {
+		if(parent->getValue() < newNode->getValue()) {
+			if(parent->getRight()) {
+				parent = parent->getRight();
+			}
+			else {
+				parent->setRight(newNode);
+				newNode->setParent(parent);
+				break;
+			}
+		}
+		else {
+			if(parent->getLeft()) {
+				parent = parent->getLeft();
+			}
+			else {
+				parent->setLeft(newNode);
+				newNode->setParent(parent);
+				break;
+			}
+		}
+	}
+}
+
+template<class T>
+TreeNode<T> * BST<T>::find(T val) {
+	if(!BinaryTree<T>::root) {
+		return NULL;
+	}
+	TreeNode<T> * temp = BinaryTree<T>::root;
+	while(temp) {
+		if(temp->getValue() < val) {
+			temp = temp->getRight();
+		}
+		else if(temp->getValue() > val){
+			temp = temp->getLeft();
+		}
+		else {
+			return temp;
+		}
+	}
+	return temp;
 }
 
 template<class T>

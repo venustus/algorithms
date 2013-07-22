@@ -66,7 +66,7 @@ namespace {
 
 		int height;
 		ASSERT_FALSE(tree2->isBST());
-		ASSERT_FALSE(tree2->isBalanced(height));
+		ASSERT_TRUE(tree2->isBalanced(height));
 		EXPECT_EQ(height, 4);
 
 		tree2->appendNode(new TreeNode<int>(11));
@@ -80,7 +80,7 @@ namespace {
 		static const int bstlistarr[] = {7, 4, 9, 2, 6, 8, 10, 1, 3, 5};
 		std::vector<int> bstlist(bstlistarr, bstlistarr + sizeof(bstlistarr)/sizeof(bstlistarr[0]));
 
-		BinaryTree<int> * bst = new BinaryTree<int>(&bstlist);
+		BST<int> * bst = new BST<int>(&bstlist, true);
 		ASSERT_TRUE(bst->isBST());
 
 		TreeNode<int> * can = tree2->findCommonAncestor(new TreeNode<int>(8), new TreeNode<int>(5));
@@ -99,6 +99,58 @@ namespace {
 		ASSERT_TRUE(*can == 4);
 		can = bst->findCommonAncestor(new TreeNode<int>(3), new TreeNode<int>(8));
 		ASSERT_TRUE(*can == 7);
+
+		TreeNode<int> * node = bst->find(8);
+		ASSERT_TRUE(node != NULL);
+		node = bst->find(12);
+		ASSERT_TRUE(node == NULL);
+		bst->remove(4);
+		node = bst->find(4);
+		ASSERT_TRUE(node == NULL);
+	}
+
+	TEST(BinaryTreeTests, AdvancedTests) {
+		static const int treelistarr3[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		std::vector<int> treelist3(treelistarr3, treelistarr3 + sizeof(treelistarr3)/sizeof(treelistarr3[0]));
+
+		BinaryTree<int> * tree3 = new BinaryTree<int>(&treelist3);
+
+		vector<TreeNode<int> * > * path = tree3->find(10);
+		EXPECT_EQ(path->at(0)->getValue(), 10);
+		EXPECT_EQ(path->at(1)->getValue(), 5);
+		EXPECT_EQ(path->at(2)->getValue(), 2);
+		EXPECT_EQ(path->at(3)->getValue(), 1);
+
+		static const int subtreelistarr[] = {2, 4, 5, 8, 9, 10};
+		std::vector<int> subtreelist(subtreelistarr, subtreelistarr + sizeof(subtreelistarr)/sizeof(subtreelistarr[0]));
+
+		BinaryTree<int> * subtree = new BinaryTree<int>(&subtreelist);
+
+		ASSERT_TRUE(*(tree3->isSubTree(subtree)) == TreeNode<int>(2));
+
+		static const int subtreelistarr2[] = {3, 6, 7};
+		std::vector<int> subtreelist2(subtreelistarr2, subtreelistarr2 + sizeof(subtreelistarr2)/sizeof(subtreelistarr2[0]));
+
+		subtree = new BinaryTree<int>(&subtreelist2);
+
+		ASSERT_TRUE(*(tree3->isSubTree(subtree)) == TreeNode<int>(3));
+
+		static const int subtreelistarr3[] = {9};
+		std::vector<int> subtreelist3(subtreelistarr3, subtreelistarr3 + sizeof(subtreelistarr3)/sizeof(subtreelistarr3[0]));
+
+		subtree = new BinaryTree<int>(&subtreelist3);
+
+		ASSERT_TRUE(*(tree3->isSubTree(subtree)) == TreeNode<int>(9));
+
+		static const int pathsumarr[] = {1, 4, 2, 1, 6, 3, 5, 3, 2, 0, 0, 7, 4};
+		std::vector<int> pathsumlist(pathsumarr, pathsumarr + sizeof(pathsumarr)/sizeof(pathsumarr[0]));
+
+		BinaryTree<int> * pathsumtree = new BinaryTree<int>(&pathsumlist);
+		vector<SumPath<int> * > * allpaths = pathsumtree->findAllPathsWithSum(13);
+		for(std::vector<SumPath<int> * >::iterator it = allpaths->begin(); it != allpaths->end(); ++it) {
+			(*it)->print();
+			EXPECT_EQ((*it)->getSum(), 13);
+		}
 	}
 }
 

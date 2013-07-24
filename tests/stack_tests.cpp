@@ -12,6 +12,8 @@
 #include "setofstacks.h"
 #include "threestacks.h"
 #include "tower_of_hanoi.h"
+#include "mystack.h"
+#include "histogram_rectangle.h"
 
 namespace {
 	class StackTests : public ::testing::Test {
@@ -91,6 +93,36 @@ namespace {
 		EXPECT_EQ(targetTower->top(), 3);
 		targetTower->pop();
 		EXPECT_EQ(targetTower->top(), 4);
+	}
+
+	TEST(StackTests, MyStackTest)
+	{
+		MyStack<int> * mystack = new MyStack<int>;
+		mystack->push(1);
+		mystack->push(2);
+		mystack->push(3);
+		mystack->push(4);
+		EXPECT_EQ(mystack->top(), 4);
+		mystack->pop();
+		EXPECT_EQ(mystack->top(), 3);
+		mystack->pop();
+		EXPECT_EQ(mystack->top(), 2);
+		mystack->pop();
+		EXPECT_EQ(mystack->top(), 1);
+		mystack->pop();
+		ASSERT_TRUE(mystack->empty());
+	}
+
+	TEST(StackTests, HistogramAreaTest)
+	{
+		static const int histarr[] = {5, 6, 8, 7, 8, 4};
+		std::vector<int> histlist(histarr, histarr + sizeof(histarr)/sizeof(histarr[0]));
+		Histogram * hist = new Histogram(&histlist);
+		int maxarea;
+		std::pair<int, int> maxpair = hist->computeMaxAreaRectangle(maxarea);
+		EXPECT_EQ(maxarea, 25);
+		EXPECT_EQ(maxpair.first, 0);
+		EXPECT_EQ(maxpair.second, 4);
 	}
 }
 

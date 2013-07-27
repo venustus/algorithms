@@ -204,6 +204,8 @@ public:
 
 	TreeNode<T> * getRoot();
 
+	vector<TreeNode<T> * > * getNodeArray();
+
 	/**
 	 * Returns all possible paths in the binary tree whose node values sum up to a given sum.
 	 * Paths can bend around roots.
@@ -385,6 +387,10 @@ BinaryTree<T>::BinaryTree(vector<T> * allNodes)
 		TreeNode<T> * newNode = new TreeNode<T>(*it);
 		appendNode(newNode);
 	}
+	if(allNodes->size() == 0)
+	{
+		root = NULL;
+	}
 }
 
 template<class T>
@@ -397,6 +403,12 @@ template<class T>
 TreeNode<T> * BinaryTree<T>::getRoot()
 {
 	return root;
+}
+
+template<class T>
+vector<TreeNode<T> * > * BinaryTree<T>::getNodeArray()
+{
+	return nodeArray;
 }
 
 template<class T>

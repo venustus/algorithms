@@ -15,20 +15,6 @@ namespace {
 	class BinaryHeapTests : public ::testing::Test {
 	};
 
-	/*
-	void *generateRandomNumbers(void *threadarg)
-	{
-		struct thread_data *args;
-		args = (struct thread_data *) threadarg;
-		std::ostream str = (std::ostream) args->str;
-		for(int i = 0; i < args->n; i++)
-		{
-			i >> str;
-		}
-		pthread_exit(NULL);
-	}
-	*/
-
 	TEST(BinaryHeapTests, BasicTests) {
 		static const int heaplistarr[] = {1, 2, 3, 4, 5, 7};
 		std::vector<int> heaplist(heaplistarr, heaplistarr + sizeof(heaplistarr)/sizeof(heaplistarr[0]));

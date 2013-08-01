@@ -29,6 +29,7 @@ class LinkedList
 	typedef tr1::unordered_map<T, Node<T> * > ValueHash;
 	Node<T> * head;
 	Node<T> * tail;
+	int listSize;
 
 	void init(vector<T> mylist, bool uniqueElements);
 
@@ -159,6 +160,8 @@ public:
 	 * Space complexity: O(1)
 	 */
 	Node<T> * cycleStart();
+
+	int size();
 };
 
 template<class T>
@@ -187,6 +190,7 @@ LinkedList<T>::LinkedList(vector<T> list, bool uniqueElements)
 {
 	head = NULL;
 	tail = NULL;
+	listSize = 0;
 	init(list, uniqueElements);
 }
 
@@ -195,6 +199,7 @@ LinkedList<T>::LinkedList(vector<T> list)
 {
 	head = NULL;
 	tail = NULL;
+	listSize = 0;
 	init(list, false);
 }
 
@@ -203,6 +208,13 @@ LinkedList<T>::LinkedList()
 {
 	head = NULL;
 	tail = NULL;
+	listSize = 0;
+}
+
+template<class T>
+int LinkedList<T>::size()
+{
+	return listSize;
 }
 
 template<class T>
@@ -292,6 +304,7 @@ void LinkedList<T>::append(Node<T> * node)
 		node->setPrev(tail);
 		tail = node;
 	}
+	listSize++;
 }
 
 template<class T>
@@ -308,6 +321,7 @@ Node<T> * LinkedList<T>::appendHead(Node<T> *node)
 		head->setPrev(node);
 		head = node;
 	}
+	listSize++;
 	return head;
 }
 
@@ -322,6 +336,7 @@ void LinkedList<T>::insert(Node<T> *node, Node<T> *nextTo)
 		node->setNext(nextTo->getNext());
 		nextTo->setNext(node);
 		node->setPrev(nextTo);
+		listSize++;
 	}
 }
 

@@ -50,7 +50,7 @@ std::vector<T> * mergesort(std::vector<T> * input, bool (*compare)(const void *,
 {
 	if(input->size() == 1)
 	{
-		return input;
+		return new std::vector<T>(*input);
 	}
 	std::vector<T> * firstHalf = new std::vector<T>(input->begin(), input->begin() + (input->size()/2));
 	std::vector<T> * secondHalf = new std::vector<T>(input->begin() + (input->size()/2), input->end());

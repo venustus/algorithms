@@ -148,7 +148,6 @@ namespace {
 		BinaryTree<int> * pathsumtree = new BinaryTree<int>(&pathsumlist);
 		vector<SumPath<int> * > * allpaths = pathsumtree->findAllPathsWithSum(13);
 		for(std::vector<SumPath<int> * >::iterator it = allpaths->begin(); it != allpaths->end(); ++it) {
-			(*it)->print();
 			EXPECT_EQ((*it)->getSum(), 13);
 		}
 	}

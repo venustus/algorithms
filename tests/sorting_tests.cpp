@@ -31,7 +31,18 @@ namespace {
 		std::vector<int> * sortedList = mergesort(&list, &compare);
 
 		ASSERT_TRUE(sortedListRef == *sortedList);
+	}
 
+	TEST(SortingTests, QuickSortTest)
+	{
+		static const int listarr[] = {5, 9, 3, 10, 3, 7, 4, 8, 1, 2, 6};
+		static const int sortedlistarr[] = {1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10};
+		std::vector<int> list(listarr, listarr + sizeof(listarr)/sizeof(listarr[0]));
+		std::vector<int> sortedListRef(sortedlistarr, sortedlistarr + sizeof(sortedlistarr)/sizeof(sortedlistarr[0]));
+
+		quicksort(&list);
+
+		ASSERT_TRUE(sortedListRef == list);
 	}
 
 	TEST(SortingTests, InversionsTest)

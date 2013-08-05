@@ -5,6 +5,7 @@
  *      Author: venkat
  */
 
+#include <iostream>
 #include <vector>
 
 #ifndef SORTING_H_
@@ -60,6 +61,69 @@ std::vector<T> * mergesort(std::vector<T> * input, bool (*compare)(const void *,
 	delete firstHalf;
 	delete secondHalf;
 	return mergedList;
+}
+
+template<typename T>
+void swap(std::vector<T> * input, int i, int j)
+{
+	T tmp = input->at(i);
+	input->at(i) = input->at(j);
+	input->at(j) = tmp;
+}
+
+template<typename T>
+void print(std::vector<T> * input, int start, int end)
+{
+	for(typename std::vector<T>::const_iterator it = input->begin() + start;
+			it <= input->begin() + end; ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+template<typename T>
+int partition(std::vector<T> * input, int pivotIndex, int start, int end)
+{
+	swap(input, start, pivotIndex);
+	T pivot = input->at(start);
+	int i = start + 1, j = start + 1;
+	while(j <= end)
+	{
+		if(input->at(j) <= pivot)
+		{
+			swap(input, i, j);
+			i++;
+		}
+		j++;
+	}
+	swap(input, i - 1, start);
+	return i-1;
+}
+
+template<typename T>
+void randomizedquicksort(std::vector<T> * input, int start, int end)
+{
+	if(start == end)
+	{
+		return;
+	}
+	int pivotIndex = start + (rand() % (int)(end - start + 1));
+	int pivotFinalPos = partition(input, pivotIndex, start, end);
+	if(pivotFinalPos > start)
+	{
+		randomizedquicksort(input, start, pivotFinalPos - 1);
+	}
+	if(pivotFinalPos < end)
+	{
+		randomizedquicksort(input, pivotFinalPos + 1, end);
+	}
+}
+
+template<typename T>
+void quicksort(std::vector<T> * input)
+{
+	randomizedquicksort(input, 0, input->size() - 1);
 }
 
 

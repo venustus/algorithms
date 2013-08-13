@@ -120,6 +120,91 @@ void randomizedquicksort(std::vector<T> * input, int start, int end)
 	}
 }
 
+/**
+ * Same as randomized quick sort except that the pivot index is naively
+ * chosen to be the first element of the input array.
+ */
+template<typename T>
+void naivequicksort(std::vector<T> * input, int start, int end, int &numberOfComparisons)
+{
+	if(start == end)
+	{
+		return;
+	}
+	int pivotIndex = start;
+	int pivotFinalPos = partition(input, pivotIndex, start, end);
+	if(pivotFinalPos > start)
+	{
+		numberOfComparisons += pivotFinalPos - start;
+		naivequicksort(input, start, pivotFinalPos - 1, numberOfComparisons);
+	}
+	if(pivotFinalPos < end)
+	{
+		numberOfComparisons += end - pivotFinalPos;
+		naivequicksort(input, pivotFinalPos + 1, end, numberOfComparisons);
+	}
+}
+
+template<typename T>
+void naivequicksort2(std::vector<T> * input, int start, int end, int &numberOfComparisons)
+{
+	if(start == end)
+	{
+		return;
+	}
+	int pivotIndex = end;
+	int pivotFinalPos = partition(input, pivotIndex, start, end);
+	if(pivotFinalPos > start)
+	{
+		numberOfComparisons += pivotFinalPos - start;
+		naivequicksort2(input, start, pivotFinalPos - 1, numberOfComparisons);
+	}
+	if(pivotFinalPos < end)
+	{
+		numberOfComparisons += end - pivotFinalPos;
+		naivequicksort2(input, pivotFinalPos + 1, end, numberOfComparisons);
+	}
+}
+
+template<typename T>
+int medianof3(int start, T a, int middle, T b, int end,  T c)
+{
+	if(a <= b)
+	{
+		if(c <= a) return start;
+		else if(c >= b) return middle;
+		else return end;
+	}
+	else
+	{
+		// b < a
+		if(c <= b) return middle;
+		else if (c >= a) return start;
+		else return end;
+	}
+}
+
+template<typename T>
+void medianof3quicksort(std::vector<T> * input, int start, int end, int &numberOfComparisons)
+{
+	if(start == end)
+	{
+		return;
+	}
+	int pivotIndex = medianof3(start, input->at(start), start + (end - start)/2, input->at(start + (end - start)/2), end, input->at(end));
+	int pivotFinalPos = partition(input, pivotIndex, start, end);
+	if(pivotFinalPos > start)
+	{
+		numberOfComparisons += pivotFinalPos - start;
+		medianof3quicksort(input, start, pivotFinalPos - 1, numberOfComparisons);
+	}
+	if(pivotFinalPos < end)
+	{
+		numberOfComparisons += end - pivotFinalPos;
+		medianof3quicksort(input, pivotFinalPos + 1, end, numberOfComparisons);
+	}
+}
+
 template<typename T>
 void quicksort(std::vector<T> * input)
 {

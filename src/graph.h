@@ -10,7 +10,8 @@ using namespace std;
 
 #include <tr1/unordered_map>
 #include <queue>
-#include "linked_lists.h"
+#include <vector>
+#include <set>
 
 #ifndef GRAPH_H_
 #define GRAPH_H_
@@ -21,7 +22,7 @@ template<class T>
 class GraphNode
 {
 	T data;
-	LinkedList<GraphNode<T> * > * neighbours;
+	std::set<GraphNode<T> * > * neighbours;
 	NODE_COLOR visited;
 
 public:
@@ -29,20 +30,22 @@ public:
 
 	T getValue();
 
-	LinkedList<GraphNode<T> * > * getNeighbours();
+	std::set<GraphNode<T> * > * getNeighbours();
 
 	void addNeighbour(GraphNode<T> * neighbour);
 
 	NODE_COLOR getVisited();
 
 	void setVisited(NODE_COLOR color);
+
+	void resetVisited();
 };
 
 template<class T>
 GraphNode<T>::GraphNode(T nodeData)
 {
 	data = nodeData;
-	neighbours = new LinkedList<GraphNode<T> * >;
+	neighbours = new std::set<GraphNode<T> * >;
 	visited = WHITE;
 }
 
@@ -53,7 +56,7 @@ T GraphNode<T>::getValue()
 }
 
 template<class T>
-LinkedList<GraphNode<T> * > * GraphNode<T>::getNeighbours()
+std::set<GraphNode<T> * > * GraphNode<T>::getNeighbours()
 {
 	return neighbours;
 }
@@ -61,7 +64,7 @@ LinkedList<GraphNode<T> * > * GraphNode<T>::getNeighbours()
 template<class T>
 void GraphNode<T>::addNeighbour(GraphNode<T> * neighbour)
 {
-	neighbours->append(new Node<GraphNode<T> * >(neighbour));
+	neighbours->insert(neighbour);
 }
 
 template<class T>
@@ -77,26 +80,62 @@ void GraphNode<T>::setVisited(NODE_COLOR color)
 }
 
 template<class T>
+void GraphNode<T>::resetVisited()
+{
+	visited = WHITE;
+}
+
+
+template<class T>
 class Graph
 {
 	tr1::unordered_map<T, GraphNode<T> * > * vertices;
+	std::vector<std::pair<GraphNode<T> *, GraphNode<T> * > > * edges;
 	bool directed;
 
-	void dfs_navigate(GraphNode<T> * node);
+	void dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder);
 public:
 	Graph(bool directed);
 
 	void addEdge(T a, T b);
-	void dfs();
-	void bfs();
+	void dfs(std::vector<T> * dfsOrder);
+	void bfs(std::vector<T> * bfsOrder);
+	void deleteVertex(GraphNode<T> * vertex);
 	bool pathExists(T a, T b);
+	std::pair<GraphNode<T> *, GraphNode<T> * > getIthEdge(int i);
+	void contractEdge(int edgeIndex);
+	void reset();
+	std::vector<std::pair<GraphNode<T> *, GraphNode<T> * > > * getEdges();
+	tr1::unordered_map<T, GraphNode<T> * > * getVertices();
 };
 
 template<class T>
 Graph<T>::Graph(bool isDirected)
 {
 	vertices = new tr1::unordered_map<T, GraphNode<T> * >;
+	edges = new std::vector<std::pair<GraphNode<T> *, GraphNode<T> * > >;
 	directed = isDirected;
+}
+
+template<class T>
+std::vector<std::pair<GraphNode<T> *, GraphNode<T> * > > * Graph<T>::getEdges()
+{
+	return edges;
+}
+
+template<class T>
+tr1::unordered_map<T, GraphNode<T> * > * Graph<T>::getVertices()
+{
+	return vertices;
+}
+
+template<class T>
+void Graph<T>::reset()
+{
+	for(typename tr1::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
+	{
+		it->second->resetVisited();
+	}
 }
 
 template<class T>
@@ -107,7 +146,7 @@ void Graph<T>::addEdge(T a, T b)
 	if(vertex1_it == vertices->end())
 	{
 		vertex1 = new GraphNode<T>(a);
-		pair<T, GraphNode<T> * > vertex1_pair(a, vertex1);
+		std::pair<T, GraphNode<T> * > vertex1_pair(a, vertex1);
 		vertices->insert(vertex1_pair);
 	}
 	else
@@ -128,40 +167,96 @@ void Graph<T>::addEdge(T a, T b)
 	}
 
 	vertex1->addNeighbour(vertex2);
-	if(directed == false)
+	edges->push_back(std::make_pair(vertex1, vertex2));
+	if(!directed)
 	{
 		vertex2->addNeighbour(vertex1);
 	}
 }
 
 template<class T>
-void Graph<T>::dfs()
+std::pair<GraphNode<T> *, GraphNode<T> * > Graph<T>::getIthEdge(int i)
+{
+	return edges->at(i);
+}
+
+template<class T>
+void Graph<T>::contractEdge(int edgeIndex)
+{
+	std::pair<GraphNode<T> *, GraphNode<T> * > edge = edges->at(edgeIndex);
+	GraphNode<T> * firstVertex = edge.first;
+	GraphNode<T> * secondVertex = edge.second;
+	for(typename std::set<GraphNode<T> * >::iterator it = secondVertex->getNeighbours()->begin();
+			it != secondVertex->getNeighbours()->end(); ++it)
+	{
+		if(*it != firstVertex)
+		{
+			firstVertex->addNeighbour(*it);
+			if(!directed)
+			{
+				(*it)->addNeighbour(firstVertex);
+			}
+			edges->push_back(std::make_pair(firstVertex, *it));
+		}
+	}
+	deleteVertex(secondVertex);
+	edges->erase(edges->begin() + edgeIndex);
+}
+
+template<class T>
+void Graph<T>::deleteVertex(GraphNode<T> * vertex)
+{
+	std::set<GraphNode<T> * > * neighbours = vertex->getNeighbours();
+
+	for(typename std::set<GraphNode<T> * >::iterator it = neighbours->begin();
+			it != neighbours->end(); ++it)
+	{
+		std::set<GraphNode<T> * > * neighboursOfNeighbour = (*it)->getNeighbours();
+		for(typename std::set<GraphNode<T> * >::iterator it2 = neighboursOfNeighbour->begin();
+				it2 != neighboursOfNeighbour->end(); )
+		{
+			if((*it2) == vertex)
+			{
+				neighboursOfNeighbour->erase(it2++);
+				break;
+			}
+			else
+			{
+				++it2;
+			}
+		}
+	}
+	vertices->erase(vertex->getValue());
+}
+
+template<class T>
+void Graph<T>::dfs(std::vector<T> * dfsOrder)
 {
 	for(typename tr1::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
 	{
 		GraphNode<T> * node = it->second;
 		if(node->getVisited() == WHITE)
 		{
-			dfs_navigate(node);
+			dfs_navigate(node, dfsOrder);
 		}
 	}
 }
 
 template<class T>
-void Graph<T>::dfs_navigate(GraphNode<T> * node)
+void Graph<T>::dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder)
 {
 	node->setVisited(GRAY);
 	cout << node->getValue() << " ";
-	LinkedList<GraphNode<T> * > * neighbours = node->getNeighbours();
-	Node<GraphNode<T> * > * head = neighbours->getHead();
-	while(head)
+	dfsOrder->push_back(node->getValue());
+	std::set<GraphNode<T> * > * neighbours = node->getNeighbours();
+	for(typename std::set<GraphNode<T> * >::iterator it = neighbours->begin();
+			it != neighbours->end(); ++it)
 	{
-		GraphNode<T> * neighbour = head->getValue();
+		GraphNode<T> * neighbour = *it;
 		if(neighbour->getVisited() == WHITE)
 		{
-			dfs_navigate(neighbour);
+			dfs_navigate(neighbour, dfsOrder);
 		}
-		head = head->getNext();
 	}
 	node->setVisited(BLACK);
 }
@@ -175,7 +270,8 @@ bool Graph<T>::pathExists(T a, T b)
 	GraphNode<T> * vertexa = vertex1_it->second;
 	GraphNode<T> * vertexb = vertex2_it->second;
 
-	dfs_navigate(vertexa);
+	std::vector<T> * path = new std::vector<T>;
+	dfs_navigate(vertexa, path);
 	if(vertexb->getVisited() == WHITE)
 	{
 		return false;
@@ -187,7 +283,7 @@ bool Graph<T>::pathExists(T a, T b)
 }
 
 template<class T>
-void Graph<T>::bfs()
+void Graph<T>::bfs(std::vector<T> * bfsOrder)
 {
 	queue<GraphNode<T> * > * bfsQueue = new queue<GraphNode<T> * >;
 	typename tr1::unordered_map<T, GraphNode<T> * >::iterator it;
@@ -204,15 +300,18 @@ void Graph<T>::bfs()
 			GraphNode<T> * currNode = bfsQueue->front();
 			bfsQueue->pop();
 			cout << currNode->getValue() << " ";
-			Node<GraphNode<T> * > * head = currNode->getNeighbours()->getHead();
-			while(head)
+			bfsOrder->push_back(currNode->getValue());
+			std::set<GraphNode<T> * > * neighbours = currNode->getNeighbours();
+
+			for(typename std::set<GraphNode<T> * >::iterator it = neighbours->begin();
+					it != neighbours->end(); ++it)
 			{
-				if(head->getValue()->getVisited() == WHITE)
+				GraphNode<T> * neighbour = *it;
+				if(neighbour->getVisited() == WHITE)
 				{
-					bfsQueue->push(head->getValue());
-					head->getValue()->setVisited(GRAY);
+					bfsQueue->push(neighbour);
+					neighbour->setVisited(GRAY);
 				}
-				head = head->getNext();
 			}
 			currNode->setVisited(BLACK);
 		}

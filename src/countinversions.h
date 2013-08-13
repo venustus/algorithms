@@ -11,10 +11,11 @@
 template<typename T>
 std::vector<T> * mergeAndCountSplitInversions(std::vector<T> * sortedFirstHalf,
 											  std::vector<T> * sortedSecondHalf,
-											  int &splitInversions)
+											  long long int &splitInversions)
 {
 	std::vector<T> * sortedArray = new std::vector<T>;
 	int i = 0, j = 0;
+	splitInversions = 0;
 	while(i < sortedFirstHalf->size() && j < sortedSecondHalf->size())
 	{
 		if(sortedFirstHalf->at(i) < sortedSecondHalf->at(j))
@@ -43,7 +44,7 @@ std::vector<T> * mergeAndCountSplitInversions(std::vector<T> * sortedFirstHalf,
 }
 
 template<typename T>
-std::vector<T> * sortAndCountInversions(std::vector<T> * arr, int &count)
+std::vector<T> * sortAndCountInversions(std::vector<T> * arr, long long int &count)
 {
 	if(arr->size() == 1)
 	{
@@ -52,12 +53,12 @@ std::vector<T> * sortAndCountInversions(std::vector<T> * arr, int &count)
 	}
 	std::vector<T> * firstHalf = new std::vector<T>(arr->begin(), arr->begin() + (arr->size()/2));
 	std::vector<T> * secondHalf = new std::vector<T>(arr->begin() + (arr->size()/2), arr->end());
-	int countFirstHalf, countSecondHalf;
+	long long int countFirstHalf, countSecondHalf;
 
 	std::vector<T> * sortedFirstHalf = sortAndCountInversions(firstHalf, countFirstHalf);
 	std::vector<T> * sortedSecondHalf = sortAndCountInversions(secondHalf, countSecondHalf);
 
-	int splitInversions;
+	long long int splitInversions;
 	std::vector<T> * sortedArray = mergeAndCountSplitInversions(sortedFirstHalf,
 																sortedSecondHalf,
 																splitInversions);

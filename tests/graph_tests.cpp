@@ -5,6 +5,11 @@
  *      Author: venkat
  */
 
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "gtest/gtest.h"
 #include "graph.h"
 #include "mincut.h"
@@ -35,6 +40,19 @@ namespace {
 		EXPECT_EQ(dfslist, *dfsOrder);
 	}
 
+	std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems) {
+		std::stringstream ss(s);
+		std::string item;
+		while (std::getline(ss, item, delim))
+		{
+			if(item.length() > 0)
+			{
+				elems.push_back(item);
+			}
+		}
+		return elems;
+	}
+
 	TEST(GraphTests, MinCutTest) {
 		Graph<int> * graph = new Graph<int>(false);
 		graph->addEdge(1, 2);
@@ -44,6 +62,35 @@ namespace {
 
 		int minCut = findMinCut(graph);
 		EXPECT_EQ(minCut, 2);
+
+		delete graph;
+		graph = new Graph<int>(false);
+		std::ifstream graphInput("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/kargerMinCut.txt");
+		if(graphInput.is_open())
+		{
+			while(graphInput.good())
+			{
+				std::string line;
+				getline(graphInput, line);
+				std::vector<std::string> parts;
+				split(line, '\t', parts);
+				int startVertex;
+				std::istringstream buffer(parts.at(0));
+				buffer >> startVertex;
+				for(std::vector<std::string>::iterator it = parts.begin() + 1; it != parts.end(); ++it)
+				{
+					std::istringstream buffer2(*it);
+					int vertexValue;
+					buffer2 >> vertexValue;
+					graph->addEdge(startVertex, vertexValue);
+				}
+			}
+			graphInput.close();
+			std::cout << "Number of vertices: " << graph->getVertices()->size() << std::endl;
+			std::cout << "Number of edges: " << graph->getEdges()->size() << std::endl;
+			minCut = kragersMinCut(graph);
+			std::cout << "Mincut: " << minCut << std::endl;
+		}
 	}
 }
 

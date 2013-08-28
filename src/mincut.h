@@ -35,7 +35,7 @@ int kragersMinCut(Graph<T> * graph)
 	Graph<T> * copy = new Graph<T>(graph);
 	int globalMinCut = std::numeric_limits<int>::max();
 	int count = 0;
-	while(count++ < 40000)
+	while(count++ < 100)
 	{
 		int minCut = findMinCut(copy);
 		std::cout << "Found min cut in trial " << count << " to be " << minCut << std::endl;

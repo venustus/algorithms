@@ -7,7 +7,8 @@
 
 #include <vector>
 #include <functional>
-#include "binarytree.h"
+
+using namespace std;
 
 #ifndef BINARYHEAP_H_
 #define BINARYHEAP_H_
@@ -19,24 +20,17 @@
  * logarithmic time implementations for insertion, removal
  * and increase key operations.
  *
- * This implementation derives from BinaryTree and uses
- * a tree data structure to store its nodes. So, it takes O(n)
- * extra space and does not change/need the original array
- * used to construct the heap.
- *
- * But an alternative implementation that solely depends on
- * the input array and does not need any additional space
- * can exist (and should be used for any production code)
- * with minor changes to this implementation.
- * (You only need to change getParent, getLeft and getRight
- * methods).
  */
 template<class T>
-class BinaryHeap: public BinaryTree<T>
+class BinaryHeap
 {
+	std::vector<T> * array;
 	bool maxHeap;
 	tr1::function<bool(T, T)> compareObj;
-	void heapify(TreeNode<T> * node);
+	void heapify(int index);
+	int getParentIndex(int i);
+	int getLeftChild(int i);
+	int getRightChild(int i);
 public:
 	BinaryHeap(std::vector<T> * arr, bool maxHeap);
 
@@ -58,13 +52,23 @@ public:
 	/**
 	 * Complexity: O(log n)
 	 */
-	void enhanceKey(TreeNode<T> * node, int by);
+	void enhanceKey(int index, T by);
+
+	/**
+	 * Complexity: O(n)
+	 */
+	int find(T key);
 
 	int size();
+
+	std::vector<T> * getNodeArray();
 };
 
+/**
+ * Constructs a binary heap from an array in O(n) time.
+ */
 template<class T>
-BinaryHeap<T>::BinaryHeap(std::vector<T> * arr, bool isMaxHeap): BinaryTree<T>(arr)
+BinaryHeap<T>::BinaryHeap(std::vector<T> * arr, bool isMaxHeap)
 {
 	if(isMaxHeap)
 	{
@@ -74,36 +78,44 @@ BinaryHeap<T>::BinaryHeap(std::vector<T> * arr, bool isMaxHeap): BinaryTree<T>(a
 	{
 		compareObj = std::less<T>();
 	}
-	if(arr->size() > 0)
+	array = arr;
+	if(array->size() > 0)
 	{
-		for(int i = std::floor(arr->size()/2); i >= 0; i--)
+		for(int i = std::floor(arr->size()/2) - 1; i >= 0; i--)
 		{
-			heapify(BinaryTree<T>::nodeArray->at(i));
+			heapify(i);
 		}
 	}
 	maxHeap = isMaxHeap;
 }
 
 template<class T>
-void BinaryHeap<T>::heapify(TreeNode<T> * node)
+void BinaryHeap<T>::heapify(int index)
 {
-	while(node)
+	int temp = index;
+	while(temp >= 0)
 	{
-		TreeNode<T> * largest = node;
-		if(node->getLeft() && compareObj((*(node->getLeft())).getValue(), (*node).getValue()))
+		T largest = array->at(temp);
+		int leftChildIndex = getLeftChild(temp);
+		int rightChildIndex = getRightChild(temp);
+		int largestIndex = temp;
+		if(leftChildIndex > 0 &&
+				compareObj(array->at(leftChildIndex), largest))
 		{
-			largest = node->getLeft();
+			largest = array->at(leftChildIndex);
+			largestIndex = leftChildIndex;
 		}
-		if(node->getRight() && compareObj((*(node->getRight())).getValue(), (*largest).getValue()))
+		if(rightChildIndex > 0 && compareObj(array->at(rightChildIndex), largest))
 		{
-			largest = node->getRight();
+			largest = array->at(rightChildIndex);
+			largestIndex = rightChildIndex;
 		}
-		if(largest != node)
+		if(largest != array->at(temp))
 		{
-			T tmp = largest->getValue();
-			largest->setValue(node->getValue());
-			node->setValue(tmp);
-			node = largest;
+			T tmp = largest;
+			array->at(largestIndex) = array->at(temp);
+			array->at(temp) = tmp;
+			temp = largestIndex;
 		}
 		else
 		{
@@ -113,20 +125,59 @@ void BinaryHeap<T>::heapify(TreeNode<T> * node)
 }
 
 template<class T>
+int BinaryHeap<T>::getParentIndex(int i)
+{
+	if(i%2 == 0)
+	{
+		return ((i / 2) - 1);
+	}
+	else
+	{
+		return i / 2;
+	}
+}
+
+template<class T>
+int BinaryHeap<T>::getLeftChild(int i)
+{
+	if(((2 * i) + 1) < array->size())
+	{
+		return 2 * i + 1;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+template<class T>
+int BinaryHeap<T>::getRightChild(int i)
+{
+	if(((2 * i) + 2) < array->size())
+	{
+		return 2 * i + 2;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+template<class T>
 void BinaryHeap<T>::insert(T val)
 {
-	TreeNode<T> * newNode = new TreeNode<T>(val);
-	BinaryTree<T>::appendNode(newNode);
-	TreeNode<T> * parent = newNode->getParent();
-	while(parent)
+	array->push_back(val);
+	int parentIndex = getParentIndex(array->size() - 1);
+	int currentIndex = array->size() - 1;
+	while(parentIndex >= 0)
 	{
-		if(compareObj(newNode->getValue(), parent->getValue()))
+		if(compareObj(array->at(currentIndex), array->at(parentIndex)))
 		{
-			T tmp = newNode->getValue();
-			newNode->setValue(parent->getValue());
-			parent->setValue(tmp);
-			newNode = parent;
-			parent = parent->getParent();
+			T tmp = array->at(currentIndex);
+			array->at(currentIndex) = array->at(parentIndex);
+			array->at(parentIndex) = tmp;
+			currentIndex = parentIndex;
+			parentIndex = getParentIndex(currentIndex);
 		}
 		else
 		{
@@ -138,9 +189,9 @@ void BinaryHeap<T>::insert(T val)
 template<class T>
 T BinaryHeap<T>::findTop()
 {
-	if(BinaryTree<T>::root)
+	if(array->size() > 0)
 	{
-		return BinaryTree<T>::root->getValue();
+		return array->at(0);
 	}
 	else
 	{
@@ -149,55 +200,59 @@ T BinaryHeap<T>::findTop()
 }
 
 template<class T>
-void BinaryHeap<T>::removeTop()
+int BinaryHeap<T>::find(T key)
 {
-	if(BinaryTree<T>::nodeArray == NULL || BinaryTree<T>::nodeArray->size() == 0)
+	for(typename std::vector<T>::iterator it = array->begin(); it != array->end(); ++it)
 	{
-		return;
+		if(key == *it)
+		{
+			return it - array->begin();
+		}
 	}
-	if(BinaryTree<T>::nodeArray->size() == 1)
-	{
-		BinaryTree<T>::nodeArray->pop_back();
-		return;
-	}
-	T tmp = BinaryTree<T>::nodeArray->at(0)->getValue();
-	BinaryTree<T>::nodeArray->at(0)->setValue(BinaryTree<T>::nodeArray->at(BinaryTree<T>::nodeArray->size() - 1)->getValue());
-	BinaryTree<T>::nodeArray->at(BinaryTree<T>::nodeArray->size() - 1)->setValue(tmp);
-	TreeNode<T> * lastNode = BinaryTree<T>::nodeArray->at(BinaryTree<T>::nodeArray->size() - 1);
-	TreeNode<T> * parent = lastNode->getParent();
-	if(parent->getLeft() == lastNode)
-	{
-		parent->setLeft(NULL);
-	}
-	else
-	{
-		parent->setRight(NULL);
-	}
-	BinaryTree<T>::nodeArray->pop_back();
-	heapify(BinaryTree<T>::root);
+	return -1;
 }
 
 template<class T>
-void BinaryHeap<T>::enhanceKey(TreeNode<T> * node, int by)
+void BinaryHeap<T>::removeTop()
+{
+	if(array->size() == 0)
+	{
+		return;
+	}
+	if(array->size() == 1)
+	{
+		array->pop_back();
+		return;
+	}
+	T tmp = array->at(0);
+	array->at(0) = array->at(array->size() - 1);
+	array->at(array->size() - 1) = tmp;
+	array->pop_back();
+	heapify(0);
+}
+
+template<class T>
+void BinaryHeap<T>::enhanceKey(int index, T by)
 {
 	if(maxHeap)
 	{
-		node->setValue(node->getValue() + by);
+		array->at(index) = array->at(index) + by;
 	}
 	else
 	{
-		node->setValue(node->getValue() - by);
+		array->at(index) = array->at(index) - by;
 	}
-	TreeNode<T> * parent = node->getParent();
-	while(parent)
+	int parentIndex = getParentIndex(index);
+	int currentIndex = index;
+	while(parentIndex >= 0)
 	{
-		if(compareObj(node->getValue(), parent->getValue()))
+		if(compareObj(array->at(currentIndex), array->at(parentIndex)))
 		{
-			T tmp = node->getValue();
-			node->setValue(parent->getValue());
-			parent->setValue(tmp);
-			node = parent;
-			parent = parent->getParent();
+			T tmp = array->at(currentIndex);
+			array->at(currentIndex) = array->at(parentIndex);
+			array->at(parentIndex) = tmp;
+			currentIndex = parentIndex;
+			parentIndex = getParentIndex(currentIndex);
 		}
 		else
 		{
@@ -209,7 +264,13 @@ void BinaryHeap<T>::enhanceKey(TreeNode<T> * node, int by)
 template<class T>
 int BinaryHeap<T>::size()
 {
-	return BinaryTree<T>::nodeArray->size();
+	return array->size();
+}
+
+template<class T>
+std::vector<T> * BinaryHeap<T>::getNodeArray()
+{
+	return array;
 }
 
 #endif /* BINARYHEAP_H_ */

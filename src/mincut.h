@@ -38,7 +38,6 @@ int kragersMinCut(Graph<T> * graph)
 	while(count++ < 100)
 	{
 		int minCut = findMinCut(copy);
-		std::cout << "Found min cut in trial " << count << " to be " << minCut << std::endl;
 		if(minCut < globalMinCut)
 		{
 			globalMinCut = minCut;

@@ -7,7 +7,6 @@
 
 #include <pthread.h>
 #include "gtest/gtest.h"
-#include "binarytree.h"
 #include "binaryheap.h"
 #include "topkelements.h"
 
@@ -20,26 +19,26 @@ namespace {
 		std::vector<int> heaplist(heaplistarr, heaplistarr + sizeof(heaplistarr)/sizeof(heaplistarr[0]));
 
 		BinaryHeap<int> * heap = new BinaryHeap<int>(&heaplist, true);
-		vector<TreeNode<int> * > * nodeArray = heap->getNodeArray();
+		std::vector<int> * nodeArray = heap->getNodeArray();
 		EXPECT_EQ(nodeArray->size(), heaplist.size());
-		EXPECT_EQ(nodeArray->at(0)->getValue(), 7);
-		EXPECT_EQ(nodeArray->at(1)->getValue(), 5);
-		EXPECT_EQ(nodeArray->at(2)->getValue(), 3);
-		EXPECT_EQ(nodeArray->at(3)->getValue(), 4);
-		EXPECT_EQ(nodeArray->at(4)->getValue(), 2);
-		EXPECT_EQ(nodeArray->at(5)->getValue(), 1);
+		EXPECT_EQ(nodeArray->at(0), 7);
+		EXPECT_EQ(nodeArray->at(1), 5);
+		EXPECT_EQ(nodeArray->at(2), 3);
+		EXPECT_EQ(nodeArray->at(3), 4);
+		EXPECT_EQ(nodeArray->at(4), 2);
+		EXPECT_EQ(nodeArray->at(5), 1);
 		EXPECT_EQ(heap->findTop(), 7);
 		heap->insert(6);
 		EXPECT_EQ(nodeArray->size(), 7);
-		EXPECT_EQ(nodeArray->at(2)->getValue(), 6);
-		EXPECT_EQ(nodeArray->at(6)->getValue(), 3);
+		EXPECT_EQ(nodeArray->at(2), 6);
+		EXPECT_EQ(nodeArray->at(6), 3);
 		heap->removeTop();
 		EXPECT_EQ(heap->findTop(), 6);
 		EXPECT_EQ(nodeArray->size(), 6);
-		EXPECT_EQ(nodeArray->at(4)->getValue(), 2);
-		EXPECT_EQ(nodeArray->at(5)->getValue(), 1);
+		EXPECT_EQ(nodeArray->at(4), 2);
+		EXPECT_EQ(nodeArray->at(5), 1);
 
-		heap->enhanceKey(nodeArray->at(5), 10);
+		heap->enhanceKey(5, 10);
 		EXPECT_EQ(heap->findTop(), 11);
 	}
 

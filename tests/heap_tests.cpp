@@ -38,7 +38,7 @@ namespace {
 		EXPECT_EQ(nodeArray->at(4), 2);
 		EXPECT_EQ(nodeArray->at(5), 1);
 
-		heap->enhanceKey(5, 10);
+		heap->enhanceKey(5, 11);
 		EXPECT_EQ(heap->findTop(), 11);
 	}
 

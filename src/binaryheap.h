@@ -5,10 +5,12 @@
  *      Author: venkat
  */
 
-#include <vector>
-#include <functional>
 
 using namespace std;
+
+#include <vector>
+#include <tr1/functional>
+#include <tr1/unordered_map>
 
 #ifndef BINARYHEAP_H_
 #define BINARYHEAP_H_
@@ -25,8 +27,8 @@ template<class T>
 class BinaryHeap
 {
 	std::vector<T> * array;
-	bool maxHeap;
 	tr1::function<bool(T, T)> compareObj;
+	bool maxHeap;
 	void heapify(int index);
 	int getParentIndex(int i);
 	int getLeftChild(int i);
@@ -53,6 +55,11 @@ public:
 	 * Complexity: O(log n)
 	 */
 	void enhanceKey(int index, T by);
+
+	/**
+	 * Complexity: O(n)
+	 */
+	void findAndUpdateKey(T key, T newKey);
 
 	/**
 	 * Complexity: O(n)
@@ -204,7 +211,7 @@ int BinaryHeap<T>::find(T key)
 {
 	for(typename std::vector<T>::iterator it = array->begin(); it != array->end(); ++it)
 	{
-		if(key == *it)
+		if(*it == key)
 		{
 			return it - array->begin();
 		}
@@ -232,16 +239,25 @@ void BinaryHeap<T>::removeTop()
 }
 
 template<class T>
-void BinaryHeap<T>::enhanceKey(int index, T by)
+void BinaryHeap<T>::findAndUpdateKey(T key, T newKey)
 {
-	if(maxHeap)
+	int index = find(key);
+	if(maxHeap && newKey > array->at(index))
 	{
-		array->at(index) = array->at(index) + by;
+		enhanceKey(index, newKey);
 	}
-	else
+	else if(!maxHeap && newKey < array->at(index))
 	{
-		array->at(index) = array->at(index) - by;
+		enhanceKey(index, newKey);
 	}
+}
+
+template<class T>
+void BinaryHeap<T>::enhanceKey(int index, T dest)
+{
+	T initialValue = array->at(index);
+	array->at(index) = dest;
+	std::cout << "Enhanced key " << initialValue << " to " << dest << std::endl;
 	int parentIndex = getParentIndex(index);
 	int currentIndex = index;
 	while(parentIndex >= 0)

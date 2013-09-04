@@ -9,10 +9,13 @@
 using namespace std;
 #include <iostream>
 #include <tr1/unordered_map>
+#include <functional>
 #include <queue>
 #include <vector>
 #include <set>
 #include <stdexcept>
+#include <limits>
+#include "binaryheap.h"
 
 #ifndef GRAPH_H_
 #define GRAPH_H_
@@ -26,6 +29,7 @@ class GraphNode
 {
 	T data;
 	tr1::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * > * neighbours;
+	std::set<GraphEdge<T> * > * incidentEdges;
 	NODE_COLOR visited;
 
 public:
@@ -37,7 +41,10 @@ public:
 
 	tr1::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * > * getNeighbours();
 
+	std::set<GraphEdge<T> * > * getIncidentEdges();
+
 	void addNeighbour(GraphNode<T> * neighbour, GraphEdge<T> * edgeIndex);
+	void addIncidentEdge(GraphEdge<T> * incidentEdge);
 
 	NODE_COLOR getVisited();
 
@@ -50,11 +57,14 @@ template<class T>
 class GraphEdge
 {
 	std::pair<GraphNode<T> *, GraphNode<T> * > vertexPair;
+	long weight;
 public:
 	GraphEdge(GraphNode<T> * first, GraphNode<T> * second);
+	GraphEdge(GraphNode<T> * first, GraphNode<T> * second, long weight);
 	~GraphEdge();
 	GraphNode<T> * getFirst();
 	GraphNode<T> * getSecond();
+	long getWeight();
 	void replaceVertex(GraphNode<T> * vertex, GraphNode<T> * replacement);
 	bool operator==(const GraphEdge &other)
 	{
@@ -62,6 +72,57 @@ public:
 				(other.vertexPair.first == vertexPair.second && other.vertexPair.second == vertexPair.first);
 	}
 };
+
+/**
+ * This is a wrapper over graph node which includes
+ * dijkstra score so that we can easily manipulate the heap
+ * when implementing dijkstra's single-source shortest
+ * paths algorithm.
+ */
+template<class T>
+class DijkstraNode
+{
+	GraphNode<T> * node;
+	long dijkstraScore;
+public:
+	DijkstraNode();
+	DijkstraNode(GraphNode<T> * node);
+	DijkstraNode(GraphNode<T> * node, long score);
+	bool operator<(const DijkstraNode<T> &other) const;
+	bool operator>(const DijkstraNode<T> &other) const;
+	bool operator==(const DijkstraNode<T> &other) const;
+	bool operator!=(const DijkstraNode<T> &other) const;
+	friend std::ostream& operator<<(std::ostream& os, const DijkstraNode<T>& obj)
+	{
+		os << "Node (" << obj.node->getValue() << ", " << obj.dijkstraScore << ")";
+		return os;
+	}
+	DijkstraNode<T> & operator=(const DijkstraNode<T> &rhs);
+	DijkstraNode<T>& operator-=(const DijkstraNode<T> &other);
+	DijkstraNode<T>& operator+=(const DijkstraNode<T> &other);
+	GraphNode<T> * getNode() const;
+	long getScore();
+	void setScore(long newScore);
+};
+
+
+//namespace std
+//{
+//	template<typename T>
+//	struct std::tr1::hash<DijkstraNode<T> >
+//	{
+//		std::size_t operator()(const DijkstraNode<T>& k) const
+//		{
+//		  using std::size_t;
+//		  using tr1::hash;
+//		  using std::string;
+//
+//		  GraphNode<T> * node = k.getNode();
+//
+//		  return hash<T>()(node->getValue());
+//		}
+//	};
+//}
 
 template<typename T>
 struct eq
@@ -76,6 +137,14 @@ template<class T>
 GraphEdge<T>::GraphEdge(GraphNode<T> * first, GraphNode<T> * second)
 {
 	vertexPair = std::make_pair(first, second);
+	weight = 1;
+}
+
+template<class T>
+GraphEdge<T>::GraphEdge(GraphNode<T> * first, GraphNode<T> * second, long edgeWeight)
+{
+	vertexPair = std::make_pair(first, second);
+	weight = edgeWeight;
 }
 
 template<class T>
@@ -116,11 +185,18 @@ GraphNode<T> * GraphEdge<T>::getSecond()
 }
 
 template<class T>
+long GraphEdge<T>::getWeight()
+{
+	return weight;
+}
+
+template<class T>
 GraphNode<T>::GraphNode(T nodeData)
 {
 	data = nodeData;
 	neighbours = new tr1::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * >;
 	visited = WHITE;
+	incidentEdges = new std::set<GraphEdge<T> * >;
 }
 
 template<class T>
@@ -129,6 +205,7 @@ GraphNode<T>::GraphNode(GraphNode<T> * copy)
 	data = copy->data;
 	neighbours = new tr1::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * >;
 	visited = WHITE;
+	incidentEdges = new std::set<GraphEdge<T> * >;
 }
 
 template<class T>
@@ -162,6 +239,12 @@ void GraphNode<T>::addNeighbour(GraphNode<T> * neighbour, GraphEdge<T> * edge)
 }
 
 template<class T>
+void GraphNode<T>::addIncidentEdge(GraphEdge<T> * incidentEdge)
+{
+	incidentEdges->insert(incidentEdges->end(), incidentEdge);
+}
+
+template<class T>
 NODE_COLOR GraphNode<T>::getVisited()
 {
 	return visited;
@@ -187,22 +270,26 @@ class Graph
 	std::vector<GraphEdge<T> * > * edges;
 	bool directed;
 
-	void dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder);
+	void dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder,
+					  std::vector<T> * topologicalOrder, int &topoLabel);
 public:
 	Graph(bool directed);
 	Graph(Graph<T> * copy);
 	~Graph();
 
 	void addEdge(T a, T b);
-	void dfs(std::vector<T> * dfsOrder);
+	void addEdge(T a, T b, long weight);
+	void dfs(std::vector<T> * dfsOrder, std::vector<T> * topologicalOrder);
 	void bfs(std::vector<T> * bfsOrder);
 	void deleteVertex(GraphNode<T> * vertex);
 	bool pathExists(T a, T b);
 	GraphEdge<T> * getIthEdge(int i);
 	void contractEdge(int edgeIndex);
 	void reset();
+	GraphNode<T> * getNodeForVertex(T val);
 	std::vector<GraphEdge<T> * > * getEdges();
 	tr1::unordered_map<T, GraphNode<T> * > * getVertices();
+	std::vector<DijkstraNode<T> > * findShortestPaths(GraphNode<T> * source);
 };
 
 template<class T>
@@ -246,6 +333,20 @@ tr1::unordered_map<T, GraphNode<T> * > * Graph<T>::getVertices()
 }
 
 template<class T>
+GraphNode<T> * Graph<T>::getNodeForVertex(T val)
+{
+	try
+	{
+		GraphNode<T> * node = (*vertices)[val];
+		return node;
+	}
+	catch(const std::out_of_range& oor)
+	{
+		return NULL;
+	}
+}
+
+template<class T>
 void Graph<T>::reset()
 {
 	for(typename tr1::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
@@ -256,6 +357,12 @@ void Graph<T>::reset()
 
 template<class T>
 void Graph<T>::addEdge(T a, T b)
+{
+	addEdge(a, b ,1);
+}
+
+template<class T>
+void Graph<T>::addEdge(T a, T b, long weight)
 {
 	GraphNode<T> * vertex1, * vertex2;
 	typename tr1::unordered_map<T, GraphNode<T> * >::const_iterator vertex1_it = vertices->find(a);
@@ -287,11 +394,15 @@ void Graph<T>::addEdge(T a, T b)
 			neighbours->find(vertex2);
 	if(edgeMapIt == neighbours->end())
 	{
-		GraphEdge<T> * newEdge = new GraphEdge<T>(vertex1, vertex2);
+		GraphEdge<T> * newEdge = new GraphEdge<T>(vertex1, vertex2, weight);
 		vertex1->addNeighbour(vertex2, newEdge);
 		if(!directed)
 		{
 			vertex2->addNeighbour(vertex1, newEdge);
+		}
+		else
+		{
+			vertex2->addIncidentEdge(newEdge);
 		}
 		edges->push_back(newEdge);
 	}
@@ -373,20 +484,22 @@ void Graph<T>::deleteVertex(GraphNode<T> * vertex)
 }
 
 template<class T>
-void Graph<T>::dfs(std::vector<T> * dfsOrder)
+void Graph<T>::dfs(std::vector<T> * dfsOrder, std::vector<T> * topologicalOrder)
 {
+	int topoLabel = vertices->size() - 1;
 	for(typename tr1::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
 	{
 		GraphNode<T> * node = it->second;
 		if(node->getVisited() == WHITE)
 		{
-			dfs_navigate(node, dfsOrder);
+			dfs_navigate(node, dfsOrder, topologicalOrder, topoLabel);
 		}
 	}
 }
 
 template<class T>
-void Graph<T>::dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder)
+void Graph<T>::dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder,
+							std::vector<T> * topologicalOrder, int &topoLabel)
 {
 	node->setVisited(GRAY);
 	cout << node->getValue() << " ";
@@ -400,11 +513,12 @@ void Graph<T>::dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder)
 			GraphNode<T> * neighbour = it->first;
 			if(neighbour->getVisited() == WHITE)
 			{
-				dfs_navigate(neighbour, dfsOrder);
+				dfs_navigate(neighbour, dfsOrder, topologicalOrder, topoLabel);
 			}
 		}
 	}
 	node->setVisited(BLACK);
+	topologicalOrder->at(topoLabel--) = node->getValue();
 }
 
 template<class T>
@@ -417,7 +531,8 @@ bool Graph<T>::pathExists(T a, T b)
 	GraphNode<T> * vertexb = vertex2_it->second;
 
 	std::vector<T> * path = new std::vector<T>;
-	dfs_navigate(vertexa, path);
+	std::vector<T> * topoOrder = new std::vector<T>(vertices->size(), vertexa->getValue());
+	dfs_navigate(vertexa, path, topoOrder, vertices->size());
 	if(vertexb->getVisited() == WHITE)
 	{
 		return false;
@@ -466,4 +581,159 @@ void Graph<T>::bfs(std::vector<T> * bfsOrder)
 	}
 	delete(bfsQueue);
 }
+
+template<class T>
+DijkstraNode<T>::DijkstraNode()
+{
+	node = NULL;
+	dijkstraScore = std::numeric_limits<long>::max();
+}
+
+template<class T>
+DijkstraNode<T>::DijkstraNode(GraphNode<T> * n, long score)
+{
+	node = n;
+	dijkstraScore = score;
+}
+
+template<class T>
+DijkstraNode<T>::DijkstraNode(GraphNode<T> * n)
+{
+	node = n;
+	dijkstraScore = std::numeric_limits<long>::max();
+}
+
+template<class T>
+bool DijkstraNode<T>::operator<(const DijkstraNode<T> &other) const
+{
+	return dijkstraScore <= other.dijkstraScore;
+}
+
+template<class T>
+bool DijkstraNode<T>::operator>(const DijkstraNode<T> &other) const
+{
+	return dijkstraScore > other.dijkstraScore;
+}
+
+template<class T>
+bool DijkstraNode<T>::operator==(const DijkstraNode<T> &other) const
+{
+	return node == other.node;
+}
+
+template<class T>
+bool DijkstraNode<T>::operator!=(const DijkstraNode<T> &other) const
+{
+	return node != other.node;
+}
+
+template<class T>
+DijkstraNode<T>& DijkstraNode<T>::operator-=(const DijkstraNode<T> &other)
+{
+	this->dijkstraScore -= other.dijkstraScore;
+	return *this;
+}
+
+template<class T>
+DijkstraNode<T>& DijkstraNode<T>::operator+=(const DijkstraNode<T> &other)
+{
+	this->dijkstraScore += other.dijkstraScore;
+	return *this;
+}
+
+template<class T>
+inline DijkstraNode<T> operator+(DijkstraNode<T> lhs, const DijkstraNode<T>& rhs)
+{
+	lhs += rhs;
+	return lhs;
+}
+
+template<class T>
+inline DijkstraNode<T> operator-(DijkstraNode<T> lhs, const DijkstraNode<T>& rhs)
+{
+	lhs -= rhs;
+	return lhs;
+}
+
+template<class T>
+DijkstraNode<T> & DijkstraNode<T>::operator=(const DijkstraNode<T> &rhs)
+{
+	node = rhs.node;
+	dijkstraScore = rhs.dijkstraScore;
+	return *this;
+}
+
+
+template<class T>
+GraphNode<T> * DijkstraNode<T>::getNode() const
+{
+	return node;
+}
+
+template<class T>
+long DijkstraNode<T>::getScore()
+{
+	return dijkstraScore;
+}
+
+template<class T>
+void DijkstraNode<T>::setScore(long newScore)
+{
+	dijkstraScore = newScore;
+}
+
+template<class T>
+std::vector<DijkstraNode<T> > * Graph<T>::findShortestPaths(GraphNode<T> * source)
+{
+	std::vector<DijkstraNode<T> > * shortestPaths =
+			new std::vector<DijkstraNode<T> >;
+	tr1::unordered_map<GraphNode<T> *, DijkstraNode<T> > *
+		nodeMapping = new tr1::unordered_map<GraphNode<T> *, DijkstraNode<T> >;
+
+	std::vector<DijkstraNode<T> > * unprocessedElems = new std::vector<DijkstraNode<T> >;
+	for(typename tr1::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
+	{
+		GraphNode<T> * node = it->second;
+		DijkstraNode<T> dijkstraNode(node);
+		if(node == source)
+		{
+			dijkstraNode.setScore(0);
+		}
+		unprocessedElems->push_back(dijkstraNode);
+		nodeMapping->insert(std::make_pair(node, dijkstraNode));
+	}
+	BinaryHeap<DijkstraNode<T> > * heap = new BinaryHeap<DijkstraNode<T> >(unprocessedElems, false);
+	while(heap->size() > 0)
+	{
+		DijkstraNode<T> nextNode = heap->findTop();
+		std::cout << "Sucking in node " << nextNode.getNode()->getValue() << " with score " << nextNode.getScore() << " into known vertices list" << std::endl;
+		shortestPaths->push_back(nextNode);
+		heap->removeTop();
+		GraphNode<T> * currNode = nextNode.getNode();
+		currNode->setVisited(BLACK);
+		for(typename tr1::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * >::const_iterator it = currNode->getNeighbours()->begin();
+									it != currNode->getNeighbours()->end(); ++it)
+		{
+			DijkstraNode<T> affectedNode = (*nodeMapping)[it->first];
+			if(affectedNode.getNode()->getVisited() == BLACK)
+			{
+				continue;
+			}
+			std::set<GraphEdge<T> * > * edges = it->second;
+			long minWeight = std::numeric_limits<long>::max();
+			for(typename std::set<GraphEdge<T> * >::iterator it1 = edges->begin(); it1 != edges->end(); ++it1)
+			{
+				if((*it1)->getWeight() < minWeight)
+				{
+					minWeight = (*it1)->getWeight();
+				}
+			}
+			DijkstraNode<T> updatedNode(affectedNode.getNode(), nextNode.getScore() + minWeight);
+			std::cout << "Updating weight of node " << affectedNode.getNode()->getValue() << " from " << affectedNode.getScore() << " to " << updatedNode.getScore() << std::endl;
+			heap->findAndUpdateKey(affectedNode, updatedNode);
+		}
+	}
+	return shortestPaths;
+}
+
 #endif /* GRAPH_H_ */

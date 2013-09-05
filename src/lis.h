@@ -10,7 +10,7 @@
 
 #include <vector>
 
-int getLongestIncreasingSubsequence(std::vector<int> * input);
+int getLongestIncreasingSubsequence(std::vector<int> * input, std::vector<int> &lis);
 
 
 #endif /* LIS_H_ */

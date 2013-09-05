@@ -107,6 +107,7 @@ class BinaryTree
 	bool matchTree(TreeNode<T> * source, TreeNode<T> * pattern);
 	vector<SumPath<T> * > * findAllPaths(TreeNode<T> * root, vector<SumPath<T> * > * results, T sum);
 	bool findRecurse(TreeNode<T> * node, T val, stack<TreeNode<T> * > *);
+	int getDiameter(TreeNode<T> * root, int& height);
 protected:
 	vector<TreeNode<T> * > * nodeArray;
 	TreeNode<T> * root;
@@ -212,6 +213,13 @@ public:
 	 * Time complexity: O(n)
 	 */
 	vector<SumPath<T> * > * findAllPathsWithSum(T sum);
+
+	/**
+	 * Returns diameter of a tree.
+	 * Diameter of a tree is the longest path between any two nodes of the tree.
+	 * Time complexity: O(n)
+	 */
+	int getDiameter();
 };
 
 template<class T>
@@ -776,6 +784,28 @@ TreeNode<T> * BinaryTree<T>::findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T
 	// by assumption that the nodes are unique, we can just return the root here
 	// since root is the common ancestor
 	return root;
+}
+
+template<class T>
+int BinaryTree<T>::getDiameter()
+{
+	int height = 0;
+	return getDiameter(root, height);
+}
+
+template<class T>
+int BinaryTree<T>::getDiameter(TreeNode<T> * root, int& height)
+{
+	if(root == NULL)
+	{
+		height = 0;
+		return 0;
+	}
+	int leftHeight = 0, rightHeight = 0;
+	int leftDia = getDiameter(root->getLeft(), leftHeight);
+	int rightDia = getDiameter(root->getRight(), rightHeight);
+	height = std::max(leftHeight, rightHeight) + 1;
+	return std::max(std::max(leftDia, rightDia), leftHeight + rightHeight + 1);
 }
 
 template<class T>

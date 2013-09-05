@@ -46,13 +46,14 @@ namespace {
 	{
 		static const int arr[] = {5, 2, 6, 3, 4, 1, 9, 9, 8, 9, 5};
 		std::vector<int> arrlist(arr, arr + sizeof(arr)/sizeof(arr[0]));
-		int size = getLongestIncreasingSubsequence(&arrlist);
+		std::vector<int> lis;
+		int size = getLongestIncreasingSubsequence(&arrlist, lis);
 		EXPECT_EQ(5, size);
-//		EXPECT_EQ(2, result->at(0));
-//		EXPECT_EQ(3, result->at(1));
-//		EXPECT_EQ(4, result->at(2));
-//		EXPECT_EQ(8, result->at(3));
-//		EXPECT_EQ(9, result->at(4));
+		EXPECT_EQ(2, lis[0]);
+		EXPECT_EQ(3, lis[1]);
+		EXPECT_EQ(4, lis[2]);
+		EXPECT_EQ(8, lis[3]);
+		EXPECT_EQ(9, lis[4]);
 	}
 }
 

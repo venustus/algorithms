@@ -109,6 +109,14 @@ namespace {
 		ASSERT_TRUE(node == NULL);
 	}
 
+	TEST(BinaryTreeTests, DiameterTest) {
+		static const int treelistarr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		std::vector<int> treelist(treelistarr, treelistarr + sizeof(treelistarr)/sizeof(treelistarr[0]));
+
+		BinaryTree<int> * tree = new BinaryTree<int>(&treelist);
+		EXPECT_EQ(6, tree->getDiameter());
+	}
+
 	TEST(BinaryTreeTests, AdvancedTests) {
 		static const int treelistarr3[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 		std::vector<int> treelist3(treelistarr3, treelistarr3 + sizeof(treelistarr3)/sizeof(treelistarr3[0]));

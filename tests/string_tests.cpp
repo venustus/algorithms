@@ -11,6 +11,7 @@
 #include "string_permute.h"
 #include "stringcompress.h"
 #include "string_normalize.h"
+#include "anagram.h"
 
 namespace {
   class StringTests : public ::testing::Test {
@@ -82,6 +83,18 @@ namespace {
 	  std::string input2("inputwithnospaces");
 	  normalizedStr = normalize((char *)input2.c_str(), 17);
 	  EXPECT_STREQ(normalizedStr, "inputwithnospaces");
+  }
+
+  TEST(StringTests, AnagramTest)
+  {
+	  std::string input1("secure");
+	  std::string input2("rescue");
+	  bool value = areAnagrams(input1, input2);
+	  EXPECT_EQ(true, value);
+	  std::string input3("something");
+	  std::string input4("else");
+	  value = areAnagrams(input3, input4);
+	  EXPECT_EQ(false, value);
   }
 }
 

@@ -20,3 +20,4 @@ It contains the following data structures and algorithms as of now and is more w
 * Selection - Randomized selection in linear time
 * Divide and Conquer paradigm - Karatsuba integer multiplication, closest pair points in 2-dimensional plane, Counting inversions
 * Integer arrays - partitioning arrays, max-sum sub-array problem, longest increasing sub sequence, subset with sum on bounded sum arrays
+* Dynamic Programming - Fibonacci number computation, Longest common subsequence

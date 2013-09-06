@@ -9,6 +9,7 @@
 #include "stable_partition.h"
 #include "subsetswithsum.h"
 #include "lis.h"
+#include "fibonacci.h"
 
 namespace {
 	class ArrayTests : public ::testing::Test {
@@ -54,6 +55,13 @@ namespace {
 		EXPECT_EQ(4, lis[2]);
 		EXPECT_EQ(8, lis[3]);
 		EXPECT_EQ(9, lis[4]);
+	}
+
+	TEST(ArrayTests, FibonacciTest)
+	{
+		EXPECT_EQ(144, getNthFibonacciNo(13));
+		EXPECT_EQ(233, getNthFibonacciNo(14));
+		EXPECT_EQ(377, getNthFibonacciNo(15));
 	}
 }
 

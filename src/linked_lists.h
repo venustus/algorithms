@@ -256,9 +256,17 @@ Node<T> * LinkedList<T>::deleteNode(Node<T> * node)
 	{
 		prev->setNext(node->getNext());
 	}
+	else
+	{
+		head = node->getNext();
+	}
 	if(next)
 	{
 		next->setPrev(node->getPrev());
+	}
+	else
+	{
+		tail = node->getPrev();
 	}
 	delete(node);
 	return next;

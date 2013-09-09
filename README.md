@@ -19,5 +19,6 @@ It contains the following data structures and algorithms as of now and is more w
 * Graphs - BFS, DFS, Finding minimum cuts using kragers algorithm, Dijkstra shortest path algorithm
 * Selection - Randomized selection in linear time
 * Divide and Conquer paradigm - Karatsuba integer multiplication, closest pair points in 2-dimensional plane, Counting inversions
-* Integer arrays - partitioning arrays, max-sum sub-array problem, longest increasing sub sequence, subset with sum on bounded sum arrays
-* Dynamic Programming - Fibonacci number computation, Longest common subsequence
+* Integer arrays - partitioning arrays, longest increasing sub sequence, subset with sum on bounded sum arrays, max product sub array problem
+* Dynamic Programming - Fibonacci number computation, Longest common subsequence, Largest sum subsequence, Edit distance problem
+* Data structures - LRU Cache

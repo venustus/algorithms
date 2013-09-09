@@ -74,4 +74,37 @@ std::vector<char> * getLongestCommonSubsequence(std::vector<char>& a, std::vecto
 	return result;
 }
 
+int getEditDistance(std::vector<char>& a, std::vector<char>& b)
+{
+	std::vector<std::vector<int> > m;
+	m.resize(a.size() + 1);
+	for(int i = 0;i <= a.size();i++)
+	{
+		m[i].resize(b.size() + 1);
+		m[i][0] = i;
+	}
+	for(int j = 0;j <=b.size();j++)
+	{
+		m[0][j] = j;
+	}
+	for(int i = 1; i <= a.size(); i++)
+	{
+		for(int j = 1; j <= b.size(); j++)
+		{
+			int cand1, cand2;
+			if(a[i - 1] == b[j - 1])
+			{
+				cand1 = m[i - 1][j - 1];
+			}
+			else
+			{
+				cand1 = m[i - 1][j - 1] + 1;
+			}
+			cand2 = std::min(m[i][j - 1] + 1, m[i - 1][j] + 1);
+			m[i][j] = std::min(cand1, cand2);
+		}
+	}
+	return m[a.size()][b.size()];
+}
+
 

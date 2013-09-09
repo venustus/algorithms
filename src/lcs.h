@@ -12,5 +12,6 @@
 
 std::vector<char> * getLongestCommonSubsequence(std::vector<char>& a, std::vector<char>& b);
 
+int getEditDistance(std::vector<char>& a, std::vector<char>& b);
 
 #endif /* LCS_H_ */

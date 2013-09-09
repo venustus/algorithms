@@ -29,6 +29,11 @@ struct FindValFromPointer
 		T n;
 };
 
+/**
+ * Represents a tree node with left, right and child pointers.
+ * An auxillary visited variable is also available for
+ * all typical algorithms with trees.
+ */
 template<class T>
 class TreeNode
 {
@@ -41,6 +46,7 @@ class TreeNode
 public:
 	TreeNode(T val);
 	TreeNode();
+	~TreeNode();
 
 	T getValue();
 	void setValue(T val);
@@ -118,6 +124,11 @@ public:
 	BinaryTree();
 
 	/**
+	 * Destroys this binary tree.
+	 */
+	~BinaryTree();
+
+	/**
 	 * Constructs a binary tree with only one node which becomes the root node.
 	 */
 	BinaryTree(TreeNode<T> * root);
@@ -147,16 +158,38 @@ public:
 	 */
 	void printInOrderNoRecurse(vector<T> &inorderList);
 
+	/**
+	 * Traverses the tree in pre-order by using recursion and prints
+	 * the nodes (fills the vector 'preorderlist') in same order.
+	 */
 	void printPreOrder(vector<T> &preorderList);
 
+	/**
+	 * Traverses the tree in pre-order but without using recursion
+	 * and fills the vector 'preorderList' with the elements in same
+	 * order.
+	 */
 	void printPreOrderNoRecurse(vector<T> &preorderList);
 
+	/**
+	 * Traverse the tree in post-order with recursion.
+	 */
 	void printPostOrder(vector<T> &postorderList);
 
+	/**
+	 * Traverses the tree in post-order without recursion.
+	 */
 	void printPostOrderNoRecurse(vector<T> &postorderList);
 
+	/**
+	 * Prints the tree in breadth first order.
+	 */
 	void printNormal(vector<T> &normalorderList);
 
+	/**
+	 * Appends a new node to the tree at the end of the
+	 * tree.
+	 */
 	void appendNode(TreeNode<T> * newNode);
 
 	/**
@@ -203,8 +236,14 @@ public:
 	 */
 	TreeNode<T> * isSubTree(BinaryTree<T> * other);
 
+	/**
+	 * Returns the root of the current tree.
+	 */
 	TreeNode<T> * getRoot();
 
+	/**
+	 * Returns all tree nodes as an array in breadth first order.
+	 */
 	vector<TreeNode<T> * > * getNodeArray();
 
 	/**
@@ -230,6 +269,14 @@ TreeNode<T>::TreeNode(T value)
 	right = NULL;
 	parent = NULL;
 	visited = false;
+}
+
+template<class T>
+TreeNode<T>::~TreeNode()
+{
+	// nothing to delete as the values
+	// are not initialized within the constructor
+	// of tree node.
 }
 
 template<class T>
@@ -345,6 +392,52 @@ BinaryTree<T>::BinaryTree(TreeNode<T> * rootNode)
 	nodeArray->push_back(root);
 }
 
+/**
+ * Constructs a full binary tree from a vector.
+ * This behaves just like a heap, but no heap property
+ * is followed.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ */
+template<class T>
+BinaryTree<T>::BinaryTree(vector<T> * allNodes)
+{
+	nodeArray = new vector<TreeNode<T> * >;
+	for(typename vector<T>::iterator it = allNodes->begin(); it != allNodes->end(); ++it)
+	{
+		TreeNode<T> * newNode = new TreeNode<T>(*it);
+		appendNode(newNode);
+	}
+	if(allNodes->size() == 0)
+	{
+		root = NULL;
+	}
+}
+
+/**
+ * Reconstructs a binary tree from the inorder and preorder
+ * lists of the same tree. This reconstructs the tree exactly as it
+ * was. Only inorder or only preorder listing is not enough to
+ * reconstruct the tree exactly as it was, but both together
+ * are enough to do so.
+ *
+ * Time complexity: O(n^2)
+ * Space complexity: O(n)
+ */
+template<class T>
+BinaryTree<T>::BinaryTree(vector<T> * inorderList, vector<T> * preorderList)
+{
+	root = reconstructTree(inorderList, preorderList);
+}
+
+
+template<class T>
+BinaryTree<T>::~BinaryTree()
+{
+	delete nodeArray;
+}
+
 template<class T>
 int BinaryTree<T>::getParentIndex(int childIndex)
 {
@@ -363,6 +456,16 @@ int BinaryTree<T>::getRightChildIndex(int parentIndex)
 	return (parentIndex * 2) + 2;
 }
 
+/**
+ * Appends new 'node' to the tree at the end of the tree
+ * assuming the tree is a full binary tree.
+ * If you have used the constructor which constructs the
+ * tree from an array, then you can use this to append
+ * more nodes.
+ *
+ * Time complexity: O(1)
+ * Space complexity: O(1)
+ */
 template<class T>
 void BinaryTree<T>::appendNode(TreeNode<T> * node)
 {
@@ -386,26 +489,6 @@ void BinaryTree<T>::appendNode(TreeNode<T> * node)
 	nodeArray->push_back(node);
 }
 
-template<class T>
-BinaryTree<T>::BinaryTree(vector<T> * allNodes)
-{
-	nodeArray = new vector<TreeNode<T> * >;
-	for(typename vector<T>::iterator it = allNodes->begin(); it != allNodes->end(); ++it)
-	{
-		TreeNode<T> * newNode = new TreeNode<T>(*it);
-		appendNode(newNode);
-	}
-	if(allNodes->size() == 0)
-	{
-		root = NULL;
-	}
-}
-
-template<class T>
-BinaryTree<T>::BinaryTree(vector<T> * inorderList, vector<T> * preorderList)
-{
-	root = reconstructTree(inorderList, preorderList);
-}
 
 template<class T>
 TreeNode<T> * BinaryTree<T>::getRoot()
@@ -419,6 +502,21 @@ vector<TreeNode<T> * > * BinaryTree<T>::getNodeArray()
 	return nodeArray;
 }
 
+/**
+ * Algorithm:
+ * 1) The first element in the preorder list is the root.
+ * 2) To find the left child, we search for the root in the inorder list
+ *    and then find the index and size of the left sub tree.
+ * 3) Recursively call 'reconstructTree' with a sub-list which represents the
+ *    left sub-tree and get the root.
+ * 4) Recursively call 'reconstructTree' with a sub-list which represents the
+ *    right sub-tree and get the root.
+ * 5) Assign the left and right children and return the root.
+ *
+ * Time complexity: O(n^2) - we are accessing each element in both arrays exactly once
+ * 							 but we are searching for the element in inorder list.
+ * Space complexity: O(n)
+ */
 template<class T>
 TreeNode<T> * BinaryTree<T>::reconstructTree(vector<T> * inorderList, vector<T> * preorderList)
 {
@@ -624,6 +722,16 @@ void BinaryTree<T>::printNormal(vector<T> &normalorderList)
 	cout << endl;
 }
 
+/**
+ * Returns an array of lists, where each list represents one level
+ * in the binary tree.
+ *
+ * This uses breadth first search technique with a sentinel
+ * node pushed at the end of each level.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ */
 template<class T>
 vector<LinkedList<TreeNode<T> * > * > * BinaryTree<T>::getLevels()
 {
@@ -663,6 +771,16 @@ vector<LinkedList<TreeNode<T> * > * > * BinaryTree<T>::getLevels()
 	return levels;
 }
 
+/**
+ * Searches for an element 'val' in the binary tree and
+ * returns the path from root to that element if found
+ * and NULL otherwise.
+ *
+ * Uses find recursively on left and right children.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ */
 template<class T>
 vector<TreeNode<T> * > * BinaryTree<T>::find(T val)
 {
@@ -679,6 +797,16 @@ vector<TreeNode<T> * > * BinaryTree<T>::find(T val)
 	return path;
 }
 
+/**
+ * Algorithm:
+ * 1) If root is equal to the value passed, we found the element. Push the root on stack
+ *    and return true.
+ * 2) The element might be in left or right sub-tree. Recursively invoke
+ *    the same sub-routine to find the element in left or right sub-tree.
+ * 3) If found in either of them, return as it is and the stack will have the path
+ *    to the element.
+ * 4) If not found in both children, pop the current root from the stack and return.
+ */
 template<class T>
 bool BinaryTree<T>::findRecurse(TreeNode<T> * node, T val, stack<TreeNode<T> * > * nodeStack)
 {
@@ -698,6 +826,14 @@ bool BinaryTree<T>::findRecurse(TreeNode<T> * node, T val, stack<TreeNode<T> * >
 	return false;
 }
 
+/**
+ * Determines if this binary tree is balanced or not.
+ * Also returns the height of the binary tree in the output
+ * parameter 'height'.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 bool BinaryTree<T>::isBalanced(int &height)
 {
@@ -706,6 +842,22 @@ bool BinaryTree<T>::isBalanced(int &height)
 	return balanced;
 }
 
+/**
+ * Returns the height of the sub-tree rooted at node and
+ * fills the variable 'balanced' with 'true' if the sub-tree is balanced
+ * and with 'false' otherwise.
+ *
+ * Algorithm:
+ * 1) Get height of the left sub-tree and check if it is balanced.
+ * 2) Get height of the right sub-tree and check if it is balanced.
+ * 3) If either of the left or right sub-trees are not balanced,
+ *    then the current sub-tree is also not balanced.
+ * 4) If both left and right sub-trees are balanced then the
+ *    current sub-tree is balanced if difference between left height
+ *    and right height is at most 1.
+ * 5) Return the height of the current sub-tree as max(left height, right height)
+ *    + 1.
+ */
 template<class T>
 int BinaryTree<T>::getHeight(TreeNode<T> * node, bool &balanced)
 {
@@ -734,12 +886,38 @@ int BinaryTree<T>::getHeight(TreeNode<T> * node, bool &balanced)
 	return max(leftHeight, rightHeight) + 1;
 }
 
+/**
+ * Finds the common ancestore between two given tree nodes p and q.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 TreeNode<T> * BinaryTree<T>::findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q)
 {
 	return findFirstCommonAncestor(p, q, root);
 }
 
+/**
+ * Algorithm:
+ * 1) If root itself is p or q, return root.
+ * 2) Call 'findFirstCommonAncestor' recursively to find for p and q in left
+ *    and right sub-trees respectively.
+ * 3) If left recursive call returns a node which is neither p nor q, then it has
+ *    found common ancestor return it as it is.
+ * 4) Similarly if right recursive call returns a node which is neither p nor q, then
+ *    it has found common ancestor return it as it is.
+ * 5) If left and right recursive calls both return nothing, neither p, nor q
+ *    nor the common ancestor are found. Return NULL.
+ * 6) Now, something is found in either left or right subtree, but not in both and it could be
+ *    either p or q. Return it as it is.
+ * 7) If something is found in both left and right sub-trees and we know that
+ *    they must be p and q respectively (since we exhausted all other possibilities).
+ *    In this case, root is the first common ancestor. Return root.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ */
 template<class T>
 TreeNode<T> * BinaryTree<T>::findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T> * q, TreeNode<T> * root)
 {
@@ -786,6 +964,13 @@ TreeNode<T> * BinaryTree<T>::findFirstCommonAncestor(TreeNode<T> * p, TreeNode<T
 	return root;
 }
 
+/**
+ * Returns the diameter of a tree. The diameter of a tree
+ * is the longest distance between any two nodes in the tree.
+ *
+ * Time compexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 int BinaryTree<T>::getDiameter()
 {
@@ -793,6 +978,18 @@ int BinaryTree<T>::getDiameter()
 	return getDiameter(root, height);
 }
 
+/**
+ * Algorithm:
+ * 1) Get the diameter of left sub-tree (also get the height of it).
+ * 2) Get the diameter of right sub-tree (also get the height of it).
+ * 3) The diameter of the current sub-tree is the maximum of 3 values
+ *    - the diameter of left subtree
+ *    - the diameter of right subtree
+ *    - (height of left sub-tree) + (height of right sub-tree) + 1
+ * 4) Set the height of current sub-tree as maximum of
+ *    - (height of left sub-tree, height of right sub-tree) + 1
+ * 5) Return the diameter.
+ */
 template<class T>
 int BinaryTree<T>::getDiameter(TreeNode<T> * root, int& height)
 {
@@ -818,6 +1015,13 @@ bool BinaryTree<T>::matchTree(TreeNode<T> * source, TreeNode<T> * pattern)
 			matchTree(source->getRight(), pattern->getRight());
 }
 
+/**
+ * Algorithm:
+ * 1) Check if the pattern tree is equal to the tree rooted at source.
+ * 2) If so, then return current root.
+ * 3) Else, recursively check if the pattern matches with left sub-tree
+ *    or right sub-tree.
+ */
 template<class T>
 TreeNode<T> * BinaryTree<T>::isSubTree(TreeNode<T> * source, TreeNode<T> * pattern)
 {
@@ -835,6 +1039,14 @@ TreeNode<T> * BinaryTree<T>::isSubTree(TreeNode<T> * source, TreeNode<T> * patte
 	return NULL;
 }
 
+/**
+ * Checks if the binary tree 'other' is a subtree of the
+ * current tree.
+ *
+ * Time complexity: O(n * m) where n is the size of the current tree
+ *                  and m is the size of the sub-tree to be matched.
+ * Space complexity: O(1)
+ */
 template<class T>
 TreeNode<T> * BinaryTree<T>::isSubTree(BinaryTree<T> * other)
 {
@@ -893,6 +1105,14 @@ vector<TreeNode<T> * > * SumPath<T>::getElements()
 	return elements;
 }
 
+/**
+ * Returns all paths in a given binary tree that sum up to a given value.
+ * Paths can be any paths including that traverse a root of the sub-tree
+ * across.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ */
 template<class T>
 vector<SumPath<T> * > * BinaryTree<T>::findAllPathsWithSum(T sum)
 {
@@ -901,6 +1121,23 @@ vector<SumPath<T> * > * BinaryTree<T>::findAllPathsWithSum(T sum)
 	return results;
 }
 
+/**
+ * Algorithm:
+ * 1) Find all paths ending in left child and right child by recursively
+ *    calling the same procedure.
+ * 2) The recursive procedure also fills the results with all paths
+ *    found that sum upto 'sum'.
+ * 3) Try combining paths from left child with the root and also with the
+ *    paths from right child. There can be three new paths
+ *    3.1) Paths ending in left child + root
+ *    3.2) Paths ending in right child + root
+ *    3.3) Paths ending in left child + root + Paths ending in right child
+ *    Iterate through all such paths and find paths which sum upto 'sum'
+ *    and push them to results.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(n)
+ */
 template<class T>
 vector<SumPath<T> * > * BinaryTree<T>::findAllPaths(TreeNode<T> * root, vector<SumPath<T> * > * results, T sum)
 {
@@ -967,9 +1204,17 @@ vector<SumPath<T> * > * BinaryTree<T>::findAllPaths(TreeNode<T> * root, vector<S
 			}
 		}
 	}
+	delete pathsEndingInLeftChild;
+	delete pathsEndingInRightChild;
 	return pathsEndingInCurrentNode;
 }
 
+/**
+ * Binary search tree data structure.
+ * Can be used for quickly finding elements and also
+ * provides logarithmic running time for insertion and
+ * deletion.
+ */
 template<class T>
 class BST: public BinaryTree<T>
 {
@@ -1022,6 +1267,12 @@ public:
 	void remove(T val);
 };
 
+/**
+ * Constructs a BST from a sorted array.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 BST<T>::BST(vector<T> * sortedArray)
 {
@@ -1039,6 +1290,19 @@ BST<T>::BST(vector<T> * array, bool unsorted)
 	BinaryTree<T>::getLevels();
 }
 
+/**
+ * Constructs a binary search tree from a sorted array.
+ * Algorithm:
+ * 1) Find the middle element and create root from that element.
+ * 2) Recursively call the same procedure for the left half of
+ *    the array and get the left child to assign.
+ * 3) Recursively call the same procedure for the right half
+ *    of the array and get the right child to assign.
+ * 4) Return the current root.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 TreeNode<T> * BST<T>::getBST(vector<T> * sortedArray)
 {
@@ -1068,6 +1332,17 @@ TreeNode<T> * BST<T>::getSuccessor(T nodeValue) {
 	return getSuccessor(nodeToFind);
 }
 
+/**
+ * Returns the successor of a given node in a binary search tree.
+ * Algorithm:
+ * 1) If node has a right child, return the left most child
+ *    of the right child.
+ * 2) Move up towards root until we take a right turn.
+ *    The parent at that point is the successor.
+ *
+ * Time complexity: O(log n)
+ * Space complexity: O(1)
+ */
 template<class T>
 TreeNode<T> * BST<T>::getSuccessor(TreeNode<T> * node)
 {
@@ -1090,6 +1365,24 @@ TreeNode<T> * BST<T>::getSuccessor(TreeNode<T> * node)
 	return temp;
 }
 
+/**
+ * Removes a node with a given value from binary search tree
+ * while preserving the BST property.
+ * Algorithm:
+ * 1) Find the node to remove in O(log n) time.
+ * 2) If there are no children, remove it right away.
+ * 3) If there is only one child, remove the node and
+ *    make that child a left or right child of the original
+ *    parent depending on whether root was left or right child
+ *    of the original parent.
+ * 4) If both children are present, find the successor
+ *    and exchange the successor value with the current root
+ *    and remove the successor - successor is guaranteed to not
+ *    have both children.
+ *
+ * Time complexity: O(log n)
+ * Space complexity: O(1)
+ */
 template<class T>
 void BST<T>::remove(T val) {
 	TreeNode<T> * nodeToRemove = find(val);
@@ -1150,6 +1443,21 @@ TreeNode<T> * BST<T>::getLeftMostChild(TreeNode<T> * node)
 	return temp;
 }
 
+/**
+ * Finds common ancestor of two given tree nodes.
+ * Algorithm:
+ * 1) Start with root.
+ * 2) Keep going left or right in the direction
+ *    where both p and q are present (that is the
+ *    current root element is either less than both
+ *    or greater than both).
+ * 3) Stop when current root element is greater than p
+ *    but less than p. The current root
+ *    is the common ancestor.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 TreeNode<T> * BST<T>::findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q)
 {
@@ -1170,6 +1478,19 @@ TreeNode<T> * BST<T>::findCommonAncestor(TreeNode<T> * p, TreeNode<T> * q)
 	}
 }
 
+/**
+ * Inserts a new node in the binary search tree.
+ * Algorithm:
+ * 1) If root doesn't exists, mark the current node
+ *    as root.
+ * 2) If current root value is less than the new node value
+ *    move to right child else move to left child.
+ * 3) When you encounter NULL pointer, insert the new node
+ *    to replace the NULL pointer.
+ *
+ * Time complexity: O(log n)
+ * Space complexity: O(1)
+ */
 template<class T>
 void BST<T>::appendNode(TreeNode<T> * newNode)
 {
@@ -1202,6 +1523,13 @@ void BST<T>::appendNode(TreeNode<T> * newNode)
 	}
 }
 
+/**
+ * Finds a given value in the binary search tree.
+ * Algorithm: Too easy to write - see 'appendNode' above.
+ *
+ * Time complexity: O(log n)
+ * Space complexity: O(1)
+ */
 template<class T>
 TreeNode<T> * BST<T>::find(T val) {
 	if(!BinaryTree<T>::root) {
@@ -1222,6 +1550,12 @@ TreeNode<T> * BST<T>::find(T val) {
 	return temp;
 }
 
+/**
+ * Checks if the current tree is a binary search tree.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
 bool BinaryTree<T>::isBST()
 {

@@ -12,6 +12,12 @@
 
 using namespace std;
 
+/**
+ * Problem:
+ * Given a string 'a' and string 'b', return true if and
+ * only if 'a' and 'b' are anagrams of each other. For
+ * example, 'secure' and 'rescue' are anagrams of each other.
+ */
 bool areAnagrams(const std::string a, const std::string b);
 
 

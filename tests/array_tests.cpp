@@ -10,6 +10,7 @@
 #include "subsetswithsum.h"
 #include "lis.h"
 #include "fibonacci.h"
+#include "max_overlapping_intervals.h"
 
 namespace {
 	class ArrayTests : public ::testing::Test {
@@ -62,6 +63,19 @@ namespace {
 		EXPECT_EQ(144, getNthFibonacciNo(13));
 		EXPECT_EQ(233, getNthFibonacciNo(14));
 		EXPECT_EQ(377, getNthFibonacciNo(15));
+	}
+
+	TEST(ArrayTests, MaxOverlappingIntervalsTest)
+	{
+		std::vector<Interval> intervals;
+		Interval in1(1, 3), in2(12, 14), in3(2, 4), in4(13, 15), in5(5, 10);
+		intervals.push_back(in1);
+		intervals.push_back(in2);
+		intervals.push_back(in3);
+		intervals.push_back(in4);
+		intervals.push_back(in5);
+		int maxOverlappingIntervals = getMaxOverlappingIntervals(intervals);
+		EXPECT_EQ(2, maxOverlappingIntervals);
 	}
 }
 

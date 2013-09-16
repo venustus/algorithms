@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <queue>
 #include <cmath>
+#include <set>
 #include "linked_lists.h"
 
 using namespace std;
@@ -1220,6 +1221,9 @@ class BST: public BinaryTree<T>
 {
 	TreeNode<T> * getBST(vector<T> * sortedArray);
 	TreeNode<T> * getLeftMostChild(TreeNode<T> * node);
+	TreeNode<T> * findSettingVisited(T val, int& visitedCount,
+			  	  	  	  	  	  	 std::set<T>& setToFind);
+	LinkedList<T> * convertSubtreeToSortedList(TreeNode<T> * node);
 public:
 	/**
 	 * Constructs a binary search tree from a sorted array.
@@ -1265,6 +1269,26 @@ public:
 	 * Time complexity: O(log n)
 	 */
 	void remove(T val);
+
+	/**
+	 * Given a set of values, return true if and only if
+	 * all the values in the set occur in same path from root
+	 * to any leaf.
+	 *
+	 * Time complexity: O(m log n) where m is the size of the set and assuming
+	 *                  balanced binary search tree.
+	 * Space complexity: O(1)
+	 */
+	bool allOccurOnSamePathFromRoot(std::set<T>& vals);
+
+	/**
+	 * Convert this binary search tree into a sorted doubly
+	 * linked list.
+	 *
+	 * Time complexity: O(n)
+	 * Space complexity: O(1)
+	 */
+	LinkedList<T> * convertToSortedList();
 };
 
 /**
@@ -1550,6 +1574,42 @@ TreeNode<T> * BST<T>::find(T val) {
 	return temp;
 }
 
+template<class T>
+TreeNode<T> * BST<T>::findSettingVisited(T val, int& visitedCount,
+										std::set<T>& setToFind)
+{
+	if(!BinaryTree<T>::root) {
+		return NULL;
+	}
+	TreeNode<T> * temp = BinaryTree<T>::root;
+	while(temp)
+	{
+		if(!temp->isVisited())
+		{
+			typename std::set<T>::iterator it = setToFind.find(temp->getValue());
+			if(it != setToFind.end())
+			{
+				temp->setVisited();
+				visitedCount++;
+			}
+		}
+		else
+		{
+			visitedCount++;
+		}
+		if(temp->getValue() < val) {
+			temp = temp->getRight();
+		}
+		else if(temp->getValue() > val){
+			temp = temp->getLeft();
+		}
+		else {
+			return temp;
+		}
+	}
+	return temp;
+}
+
 /**
  * Checks if the current tree is a binary search tree.
  *
@@ -1562,6 +1622,93 @@ bool BinaryTree<T>::isBST()
 	return dfsBSTCheck(root);
 }
 
+/**
+ * Checks if all the values in a given set occur on the same root-leaf path
+ * from the root.
+ *
+ * Algorithm:
+ * 1) For each element in the input set, perform a 'find' operation
+ *    on binary search.
+ * 2) While performing find, for every node, check if the value
+ *    is in the set. If it is, set the visited variable and increment
+ *    the count.
+ * 3) If the visited count after the last iteration is equal to the size
+ *    of the input set, then all the nodes occur on the same root to null path.
+ *    Return true.
+ *
+ * Time complexity: O(m log n) where m is the size of input set and n is the size of the tree
+ * Space complexity: O(1)
+ */
+template<class T>
+bool BST<T>::allOccurOnSamePathFromRoot(std::set<T>& vals)
+{
+	int visitedCount = 0;
+	for(typename std::set<T>::const_iterator it = vals.begin(); it != vals.end(); ++it)
+	{
+		visitedCount = 0;
+		findSettingVisited(*it, visitedCount, vals);
+	}
+	return visitedCount == vals.size();
+}
+
+/**
+ * Converts a sub tree rooted at node to a sorted linked list.
+ *
+ * Algorithm:
+ * 1) Get the sorted list for left subtree recursively.
+ * 2) Get the sorted list for right subtree recursively.
+ * 3) Stitch the two lists together by inserting the root
+ *    in between.
+ * 4) Return the new list.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
+template<class T>
+LinkedList<T> * BST<T>::convertSubtreeToSortedList(TreeNode<T> * node)
+{
+	LinkedList<T> * result = new LinkedList<T>;
+	LinkedList<T> * leftResult = NULL, * rightResult = NULL;
+	if(node->getLeft())
+	{
+		leftResult = convertSubtreeToSortedList(node->getLeft());
+	}
+	if(node->getRight())
+	{
+		rightResult = convertSubtreeToSortedList(node->getRight());
+	}
+	Node<T> * rootNode = new Node<T>(node->getValue());
+	if(leftResult)
+	{
+		delete result;
+		result = leftResult;
+	}
+	result->append(rootNode);
+	if(rightResult)
+	{
+		result->appendList(rightResult);
+	}
+	return result;
+}
+
+template<class T>
+LinkedList<T> * BST<T>::convertToSortedList()
+{
+	return convertSubtreeToSortedList(BST<T>::root);
+}
+
+/**
+ * Checks if the sub-tree rooted at node is a binary search tree.
+ * Algorithm:
+ * 1) Check if the left sub-tree is BST recursively.
+ * 2) Check if the right sub-tree is BST recursively.
+ * 3) Return false if either of them are not BSTs.
+ * 4) If both left and right sub-trees are BSTs, then
+ *    compare the values - left must be less than the root
+ *    and right must be more than the root.
+ *    If this condition satisfies, then return true.
+ * 5) Else return false.
+ */
 template<class T>
 bool BinaryTree<T>::dfsBSTCheck(TreeNode<T> * node)
 {

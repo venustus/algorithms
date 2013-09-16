@@ -9,6 +9,7 @@
 #include "lcs.h"
 #include "lss.h"
 #include "max_profit_buy_sell.h"
+#include "min_coins_for_sum.h"
 
 namespace {
   class DynamicProgrammingTests : public ::testing::Test {
@@ -62,24 +63,34 @@ namespace {
   }
 
   TEST(DynamicProgrammingTests, LPSTest)
-    {
-  	  static const int arr1[] = {1, 2, 3, -4, -5};
-  	  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
-  	  int startIndex = 0, endIndex = 0;
-  	  int maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
-  	  EXPECT_EQ(120, maxPro);
-  	  EXPECT_EQ(0, startIndex);
-  	  EXPECT_EQ(4, endIndex);
+{
+  static const int arr1[] = {1, 2, 3, -4, -5};
+  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+  int startIndex = 0, endIndex = 0;
+  int maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
+  EXPECT_EQ(120, maxPro);
+  EXPECT_EQ(0, startIndex);
+  EXPECT_EQ(4, endIndex);
 
-  	  arrlist1.push_back(-9);
-  	  arrlist1.push_back(0);
-  	  arrlist1.push_back(5);
-  	  arrlist1.push_back(6);
-  	  maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
-  	  EXPECT_EQ(120, maxPro);
-  	  EXPECT_EQ(0, startIndex);
-  	  EXPECT_EQ(4, endIndex);
-    }
+  arrlist1.push_back(-9);
+  arrlist1.push_back(0);
+  arrlist1.push_back(5);
+  arrlist1.push_back(6);
+  maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
+  EXPECT_EQ(120, maxPro);
+  EXPECT_EQ(0, startIndex);
+  EXPECT_EQ(4, endIndex);
+}
+
+  TEST(DynamicProgrammingTests, MinCoinsForSumTest)
+  {
+	  static const int arr1[] = {5, 5, 5, 5, 5};
+	  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+	  int minCoins = findMinNoOfCoinsForSum(10, arrlist1);
+	  EXPECT_EQ(2, minCoins);
+	  minCoins = findMinNoOfCoinsForSum(11, arrlist1);
+	  EXPECT_EQ(-1, minCoins);
+  }
 
   TEST(DynamicProgrammingTests, MaxProfitBuySellTest)
     {

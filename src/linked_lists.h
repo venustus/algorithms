@@ -88,6 +88,13 @@ public:
 	Node<T> * appendHead(Node<T> *node);
 
 	/**
+	 * Appends another list to the end of the current list.
+	 * Time complexity: O(1)
+	 * Space complexity: O(1)
+	 */
+	void appendList(LinkedList<T> * otherList);
+
+	/**
 	 * Inserts a given node next to another given node.
 	 * Time complexity: O(1)
 	 * Space complexity: O(1)
@@ -334,6 +341,21 @@ Node<T> * LinkedList<T>::appendHead(Node<T> *node)
 }
 
 template<class T>
+void LinkedList<T>::appendList(LinkedList<T> * otherList)
+{
+	if(!head)
+	{
+		head = otherList->getHead();
+		tail = otherList->getTail();
+		return;
+	}
+	tail->setNext(otherList->getHead());
+	otherList->getHead()->setPrev(tail);
+	tail = otherList->getTail();
+	listSize += otherList->size();
+}
+
+template<class T>
 void LinkedList<T>::insert(Node<T> *node, Node<T> *nextTo)
 {
 	if(nextTo && node)
@@ -345,6 +367,7 @@ void LinkedList<T>::insert(Node<T> *node, Node<T> *nextTo)
 		nextTo->setNext(node);
 		node->setPrev(nextTo);
 		listSize++;
+		std::cout << "List size is now: " << listSize << std::endl;
 	}
 }
 
@@ -479,7 +502,7 @@ void LinkedList<T>::print()
 			T t = temp->getValue();
 			if(tr1::is_pointer<T>::value)
 			{
-				std::cout << *t << ' ';
+				//std::cout << *t << ' ';
 			}
 			else
 			{

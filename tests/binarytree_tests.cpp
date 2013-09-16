@@ -110,11 +110,51 @@ namespace {
 	}
 
 	TEST(BinaryTreeTests, DiameterTest) {
+		static const int treelistarr[] = {1, 2, 3, 4, 5, 6, 7, 8};
+		std::vector<int> treelist(treelistarr, treelistarr + sizeof(treelistarr)/sizeof(treelistarr[0]));
+
+		std::set<int> setToFind;
+		setToFind.insert(4);
+		setToFind.insert(6);
+		setToFind.insert(7);
+
+		BST<int> * tree = new BST<int>(&treelist);
+		bool retVal = tree->allOccurOnSamePathFromRoot(setToFind);
+		EXPECT_FALSE(retVal);
+
+		std::set<int> setToFind2;
+		setToFind.insert(2);
+		setToFind.insert(3);
+		setToFind.insert(5);
+		delete tree;
+		tree = new BST<int>(&treelist);
+		retVal = tree->allOccurOnSamePathFromRoot(setToFind2);
+		EXPECT_TRUE(retVal);
+	}
+
+	TEST(BinaryTreeTests, SetSearchTest) {
 		static const int treelistarr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 		std::vector<int> treelist(treelistarr, treelistarr + sizeof(treelistarr)/sizeof(treelistarr[0]));
 
 		BinaryTree<int> * tree = new BinaryTree<int>(&treelist);
 		EXPECT_EQ(6, tree->getDiameter());
+	}
+
+	TEST(BinaryTreeTests, ConvertToListTest) {
+		static const int treelistarr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		std::vector<int> treelist(treelistarr, treelistarr + sizeof(treelistarr)/sizeof(treelistarr[0]));
+
+		BST<int> * tree = new BST<int>(&treelist);
+		LinkedList<int> * sortedList = tree->convertToSortedList();
+		EXPECT_EQ(10, sortedList->size());
+		Node<int> * head = sortedList->getHead();
+		sortedList->print();
+		for(int i = 1; i < 11; i++)
+		{
+			ASSERT_TRUE(head != NULL);
+			EXPECT_EQ(i, head->getValue());
+			head = head->getNext();
+		}
 	}
 
 	TEST(BinaryTreeTests, AdvancedTests) {

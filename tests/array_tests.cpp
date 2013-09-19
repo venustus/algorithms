@@ -11,6 +11,8 @@
 #include "lis.h"
 #include "fibonacci.h"
 #include "max_overlapping_intervals.h"
+#include "median.h"
+#include "permutations.h"
 
 namespace {
 	class ArrayTests : public ::testing::Test {
@@ -76,6 +78,29 @@ namespace {
 		intervals.push_back(in5);
 		int maxOverlappingIntervals = getMaxOverlappingIntervals(intervals);
 		EXPECT_EQ(2, maxOverlappingIntervals);
+	}
+
+	TEST(ArrayTests, MedianTest)
+	{
+		static const int arr1[] = {1, 3, 5, 7, 9};
+		static const int arr2[] = {2, 4, 6, 8, 10};
+		std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+		std::vector<int> arrlist2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
+		EXPECT_EQ(5, getMedianOfSortedArrays(arrlist1, arrlist2));
+
+		static const int arr3[] = {1, 3, 5, 7, 9};
+		static const int arr4[] = {2, 12, 14, 16, 20};
+		std::vector<int> arrlist3(arr3, arr3 + sizeof(arr3)/sizeof(arr3[0]));
+		std::vector<int> arrlist4(arr4, arr4 + sizeof(arr4)/sizeof(arr4[0]));
+		EXPECT_EQ(7, getMedianOfSortedArrays(arrlist3, arrlist4));
+	}
+
+	TEST(ArrayTests, PermutationsTest)
+	{
+		static const int arr1[] = {1, 2, 3, 4, 5};
+		std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+		std::set<std::vector<int> * > * perms = getAllPermutations(&arrlist1);
+		EXPECT_EQ(120, perms->size());
 	}
 }
 

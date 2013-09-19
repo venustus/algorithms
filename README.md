@@ -20,7 +20,7 @@ It contains the following data structures and algorithms as of now and is more w
 * Selection - Randomized selection in linear time
 * Divide and Conquer paradigm - Karatsuba integer multiplication, closest pair points in 2-dimensional plane, Counting inversions
 * Integer arrays - partitioning arrays, longest increasing sub sequence, subset with sum on bounded sum arrays, max product sub array problem,
-                   maximum number of overlapping intervals problem
+                   maximum number of overlapping intervals problem, median of two sorted arrays, finding all permutations of arrays
 * Dynamic Programming - Fibonacci number computation, Longest common subsequence, Largest sum subsequence, Edit distance problem
                         Minimum coins required to provide a sum
-* Data structures - LRU Cache
+* Data structures - LRU Cache, Fixed capacity boolean vector

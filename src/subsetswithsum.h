@@ -13,7 +13,12 @@ using namespace std;
 #include <set>
 #include <vector>
 
-
-std::set<int> * getSubsetsWithHalfSum(std::vector<int> * arr, int k);
+/**
+ * Problem:
+ * Given an array of non-negative integers, find a subset for which
+ * sum of all integers in the set equals a given value k.
+ *
+ */
+std::set<int> * getSubsetsWithSum(std::vector<int> * arr, int k);
 
 #endif /* SUBSETSWITHSUM_H_ */

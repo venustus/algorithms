@@ -23,57 +23,63 @@ void printSet(std::set<int> * s)
 	std::cout << std::endl;
 }
 
-std::set<int> * getSubsetsWithHalfSum(std::vector<int> * arr, int k)
+/**
+ * Problem:
+ * Given an array of non-negative integers, find a subset for which
+ * sum of all integers in the set equals a given value k.
+ *
+ * Approach: Dynamic Programming
+ * Algorithm:
+ * 1) Initialize a 2D array m such that m[i][j] contains a pointer to a subset
+ *    whose sum is j or NULL if no such subset exists including only elements
+ *    from 0 through i in array 'arr'.
+ * 2) Set m[i][arr[i]]] = {arr[i]} for all i from 0 through n - 1
+ * 3) Recurrence relation: m[i][sum] = either m[i - 1][sum] or {m[i - 1][sum - arr[i]], arr[i]}
+ * 4) Compute m bottom up, by having two loops one on 'sum' going from 1 through k and another
+ *    on the input array going from 1 through arr->size().
+ * 5) At the end, return m[arr->size() - 1][k]
+ *
+ * Time complexity: O(k*n)
+ * Space complexity: O(k*n)
+ *
+ * Note: This problem is NP-complete. Because 'k' is exponential in n.
+ */
+std::set<int> * getSubsetsWithSum(std::vector<int> * arr, int k)
 {
-	tr1::unordered_map<int, std::set<int> * > * results =
-			new tr1::unordered_map<int, std::set<int> * >;
-	int sum = 0;
+	std::vector<std::vector<std::set<int> * > * > * m = new std::vector<std::vector<std::set<int> * > * >;
+	m->resize(arr->size());
+	for(int i = 0; i < m->size(); i++)
+	{
+		std::vector<std::set<int> * > * newVector = new std::vector<std::set<int> * >;
+		newVector->resize(k + 1);
+		(*newVector)[arr->at(i)] = new std::set<int>;
+		(*newVector)[arr->at(i)]->insert(arr->at(i));
+		(*m)[i] = newVector;
+	}
 	// compute the sum and results
-	for(std::vector<int>::iterator it = arr->begin(); it != arr->end(); ++it)
+	for(int i = 1; i < arr->size(); i++)
 	{
-		std::set<int> * singleElemSubset = new std::set<int>;
-		singleElemSubset->insert(*it);
-		sum += *it;
-		if((*it) > (k/2))
+		for(int sum = 1; sum <= k; sum++)
 		{
-			continue;
-		}
-		(*results)[(*it)] = singleElemSubset;
-		for(tr1::unordered_map<int, std::set<int> * >::iterator it1 = results->begin();
-				it1 != results->end(); ++it1)
-		{
-			if((it1->first == (*it)) || (it1->first + (*it) > k/2))
+			std::set<int> * s = (*(*m)[i - 1])[sum];
+			if(s)
+			{
+				(*(*m)[i])[sum] = s;
+			}
+			if(arr->at(i) > sum)
 			{
 				continue;
 			}
+			s = (*(*m)[i - 1])[sum - arr->at(i)];
+			if(!s)
+			{
+				continue;
+			}
+			std::set<int> * newSet = new std::set<int>(*s);
+			newSet->insert(arr->at(i));
+			(*(*m)[i])[sum] = newSet;
+		}
+	}
 
-			std::set<int> * existingSubset = it1->second;
-			std::set<int>::iterator it2 = existingSubset->find(*it);
-			if(it2 != existingSubset->end())
-			{
-				continue;
-			}
-			std::set<int> * newSubset = new std::set<int>;
-			newSubset->insert(existingSubset->begin(), existingSubset->end());
-			newSubset->insert(*it);
-			std::cout << "Assigning the following set to sum " << (it1->first + (*it)) << std::endl;
-			printSet(newSubset);
-			(*results)[(it1->first + (*it))] = newSubset;
-		}
-	}
-	std::cout << "Total sum is: " << sum << std::endl;
-	if(sum%2 != 0)
-	{
-		return new std::set<int>;
-	}
-	try
-	{
-		std::set<int> * halfSumSubset = (*results)[sum/2];
-		delete results;
-		return halfSumSubset;
-	}
-	catch(const std::out_of_range& oor)
-	{
-		return new std::set<int>;
-	}
+	return (*(*m)[arr->size() - 1])[k];
 }

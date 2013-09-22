@@ -118,6 +118,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa7203f7e2ca9406fdf9f10d7cc214b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a569455157c16c916f1ee929c77a4b4ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_s_t.html#a569455157c16c916f1ee929c77a4b4ee">remove</a> (T val)</td></tr>
 <tr class="separator:a569455157c16c916f1ee929c77a4b4ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae558d23e76a82828ad7d655aa3cc446d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_s_t.html#ae558d23e76a82828ad7d655aa3cc446d">allOccurOnSamePathFromRoot</a> (std::set&lt; T &gt; &amp;vals)</td></tr>
+<tr class="separator:ae558d23e76a82828ad7d655aa3cc446d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bffcb0126703fb0b84cd0794b1936e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_linked_list.html">LinkedList</a>&lt; T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_s_t.html#a2bffcb0126703fb0b84cd0794b1936e1">convertToSortedList</a> ()</td></tr>
+<tr class="separator:a2bffcb0126703fb0b84cd0794b1936e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_binary_tree"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_binary_tree')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_binary_tree.html">BinaryTree&lt; T &gt;</a></td></tr>
 <tr class="memitem:a9202cce23960faf8f647c6765decccd4 inherit pub_methods_class_binary_tree"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_binary_tree.html#a9202cce23960faf8f647c6765decccd4">BinaryTree</a> ()</td></tr>
 <tr class="separator:a9202cce23960faf8f647c6765decccd4 inherit pub_methods_class_binary_tree"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,6 +238,29 @@ template&lt;class T &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ae558d23e76a82828ad7d655aa3cc446d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_b_s_t.html">BST</a>&lt; T &gt;::allOccurOnSamePathFromRoot </td>
+          <td>(</td>
+          <td class="paramtype">std::set&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vals</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a set of values, return true if and only if all the values in the set occur in same path from root to any leaf.</p>
+<p>Time complexity: O(m log n) where m is the size of the set and assuming balanced binary search tree. Space complexity: O(1)</p>
+<p>Checks if all the values in a given set occur on the same root-leaf path from the root.</p>
+<p>Algorithm: 1) For each element in the input set, perform a 'find' operation on binary search. 2) While performing find, for every node, check if the value is in the set. If it is, set the visited variable and increment the count. 3) If the visited count after the last iteration is equal to the size of the input set, then all the nodes occur on the same root to null path. Return true.</p>
+<p>Time complexity: O(m log n) where m is the size of input set and n is the size of the tree Space complexity: O(1) </p>
+
+</div>
+</div>
 <a class="anchor" id="aadb301bd1589d44dcb9b8ab148de8d23"></a>
 <div class="memitem">
 <div class="memproto">
@@ -252,6 +279,25 @@ template&lt;class T &gt; </div>
 <p>Inserts a new node into the binary search tree while preserving the <a class="el" href="class_b_s_t.html">BST</a> properties. Time complexity: O(log n)</p>
 <p>Inserts a new node in the binary search tree. Algorithm: 1) If root doesn't exists, mark the current node as root. 2) If current root value is less than the new node value move to right child else move to left child. 3) When you encounter NULL pointer, insert the new node to replace the NULL pointer.</p>
 <p>Time complexity: O(log n) Space complexity: O(1) </p>
+
+</div>
+</div>
+<a class="anchor" id="a2bffcb0126703fb0b84cd0794b1936e1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_linked_list.html">LinkedList</a>&lt; T &gt; * <a class="el" href="class_b_s_t.html">BST</a>&lt; T &gt;::convertToSortedList </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert this binary search tree into a sorted doubly linked list.</p>
+<p>Time complexity: O(n) Space complexity: O(1) </p>
 
 </div>
 </div>
@@ -374,7 +420,7 @@ template&lt;class T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Sep 9 2013 14:25:11 for Algorithms by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Sep 22 2013 09:25:04 for Algorithms by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.5
 </small></address>

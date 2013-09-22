@@ -10,6 +10,8 @@
 #include "lss.h"
 #include "max_profit_buy_sell.h"
 #include "min_coins_for_sum.h"
+#include "subsetswithsum.h"
+#include "integer_knapsack.h"
 
 namespace {
   class DynamicProgrammingTests : public ::testing::Test {
@@ -62,26 +64,6 @@ namespace {
 	  EXPECT_EQ(4, endIndex);
   }
 
-  TEST(DynamicProgrammingTests, LPSTest)
-{
-  static const int arr1[] = {1, 2, 3, -4, -5};
-  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
-  int startIndex = 0, endIndex = 0;
-  int maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
-  EXPECT_EQ(120, maxPro);
-  EXPECT_EQ(0, startIndex);
-  EXPECT_EQ(4, endIndex);
-
-  arrlist1.push_back(-9);
-  arrlist1.push_back(0);
-  arrlist1.push_back(5);
-  arrlist1.push_back(6);
-  maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
-  EXPECT_EQ(120, maxPro);
-  EXPECT_EQ(0, startIndex);
-  EXPECT_EQ(4, endIndex);
-}
-
   TEST(DynamicProgrammingTests, MinCoinsForSumTest)
   {
 	  static const int arr1[] = {5, 5, 5, 5, 5};
@@ -89,26 +71,56 @@ namespace {
 	  int minCoins = findMinNoOfCoinsForSum(10, arrlist1);
 	  EXPECT_EQ(2, minCoins);
 	  minCoins = findMinNoOfCoinsForSum(11, arrlist1);
-	  EXPECT_EQ(-1, minCoins);
+	  EXPECT_EQ(0, minCoins);
+
+	  static const int arr2[] = {1, 2, 5, 10, 20, 50, 100, 500, 1000};
+	  std::vector<int> arrlist2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
+	  minCoins = findMinNoOfCoinsForSum(78, arrlist2);
+	  EXPECT_EQ(5, minCoins);
   }
 
-  TEST(DynamicProgrammingTests, MaxProfitBuySellTest)
+  	TEST(DynamicProgrammingTests, IntegerKnapsackTest)
     {
-  	  static const int arr1[] = {30, 31, 29, 28, 34, 26};
-  	  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
-  	  int startIndex = 0, endIndex = 0;
-  	  int profit = findWhenToBuySellForMaxProfit(arrlist1, startIndex, endIndex);
-  	  EXPECT_EQ(6, profit);
-  	  EXPECT_EQ(3, startIndex);
-  	  EXPECT_EQ(4, endIndex);
-
-  	  arrlist1.push_back(27);
-  	  arrlist1.push_back(35);
-  	  profit = findWhenToBuySellForMaxProfit(arrlist1, startIndex, endIndex);
-  	  EXPECT_EQ(9, profit);
-  	  EXPECT_EQ(5, startIndex);
-  	  EXPECT_EQ(7, endIndex);
+  	  static const int values[] = {60, 100, 120};
+  	  static const int weights[] = {10, 20, 30};
+  	  std::vector<int> values_arr(values, values + sizeof(values)/sizeof(values[0]));
+  	  std::vector<int> weights_arr(weights, weights + sizeof(weights)/sizeof(weights[0]));
+  	  int maxValueInKnapSack = getMaximumValueForKnapSack(values_arr, weights_arr, 50);
+  	  EXPECT_EQ(220, maxValueInKnapSack);
     }
+
+  TEST(DynamicProgrammingTests, SubsetWithSumTest)
+  	{
+  		static const int arr[] = {5, 10, 4, 6, 7, 8, 2, 1};
+  		std::vector<int> arrlist(arr, arr + sizeof(arr)/sizeof(arr[0]));
+  		std::set<int> * subsetWithSum = getSubsetsWithSum(&arrlist, 10);
+  		ASSERT_TRUE(subsetWithSum != NULL);
+  		std::cout << "Subset with sum 10 found: ";
+  		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
+  		{
+  			std::cout << (*it) << ", ";
+  		}
+  		std::cout << std::endl;
+  		subsetWithSum = getSubsetsWithSum(&arrlist, 19);
+		ASSERT_TRUE(subsetWithSum != NULL);
+		std::cout << "Subset with sum 19 found: ";
+		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
+		{
+			std::cout << (*it) << ", ";
+		}
+		std::cout << std::endl;
+		subsetWithSum = getSubsetsWithSum(&arrlist, 15);
+		ASSERT_TRUE(subsetWithSum != NULL);
+		std::cout << "Subset with sum 19 found: ";
+		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
+		{
+			std::cout << (*it) << ", ";
+		}
+		std::cout << std::endl;
+		subsetWithSum = getSubsetsWithSum(&arrlist, 45);
+		ASSERT_TRUE(subsetWithSum == NULL);
+  	}
+
 }
 
 

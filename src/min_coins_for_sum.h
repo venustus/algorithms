@@ -10,6 +10,11 @@
 
 #include <vector>
 
+/**
+ * Problem:
+ * Given a set of coins (values of the coins), find the
+ * minimum number of coins needed to make up a given 'sum'.
+ */
 int findMinNoOfCoinsForSum(int sum, std::vector<int>& values);
 
 

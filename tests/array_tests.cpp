@@ -11,8 +11,12 @@
 #include "lis.h"
 #include "fibonacci.h"
 #include "max_overlapping_intervals.h"
+#include "max_profit_buy_sell.h"
 #include "median.h"
 #include "permutations.h"
+#include "steps_to_permutation.h"
+#include "biggest_interval.h"
+#include "lps.h"
 
 namespace {
 	class ArrayTests : public ::testing::Test {
@@ -31,19 +35,6 @@ namespace {
 		EXPECT_EQ(a[5], 7);
 		EXPECT_EQ(a[6], 3);
 		EXPECT_EQ(a[7], 2);
-	}
-
-	TEST(ArrayTests, SubsetWithHalfsubTest)
-	{
-		static const int arr[] = {5, 10, 4, -5, 7, 8, -2, 1};
-		std::vector<int> arrlist(arr, arr + sizeof(arr)/sizeof(arr[0]));
-		std::set<int> * subsetWithHalfSum = getSubsetsWithHalfSum(&arrlist, 30);
-		std::cout << "Subset found: ";
-		for(std::set<int>::iterator it = subsetWithHalfSum->begin(); it != subsetWithHalfSum->end(); ++it)
-		{
-			std::cout << (*it) << ", ";
-		}
-		std::cout << std::endl;
 	}
 
 	TEST(ArrayTests, LongestIncreasingSubsequenceTest)
@@ -101,6 +92,71 @@ namespace {
 		std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
 		std::set<std::vector<int> * > * perms = getAllPermutations(&arrlist1);
 		EXPECT_EQ(120, perms->size());
+	}
+
+	TEST(ArrayTests, StepsToPermutationsTest)
+	{
+		static const int arr1[] = {1, 4, 3, 0, 2, 5};
+		static const int arr2[] = {0, 1, 2, 3, 4, 5};
+		std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+		std::vector<int> arrlist2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
+		std::vector<SwapStep> * steps = getStepsToPermutation(arrlist1, arrlist2);
+		EXPECT_EQ(6, steps->size());
+		EXPECT_EQ(1, steps->at(0).srcValue);
+		EXPECT_EQ(4, steps->at(1).srcValue);
+		EXPECT_EQ(0, steps->at(2).srcValue);
+		EXPECT_EQ(3, steps->at(3).srcValue);
+		EXPECT_EQ(2, steps->at(4).srcValue);
+		EXPECT_EQ(4, steps->at(5).srcValue);
+	}
+
+	TEST(ArrayTests, BiggestIntervalTest)
+	{
+		static const int arr1[] = {10, 1, 3, 4, 5, 2, 7};
+		std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+		int min = 0, max = 0;
+		int range = findBiggestContiguousInterval(arrlist1, min, max);
+		EXPECT_EQ(5, range);
+		EXPECT_EQ(1, min);
+		EXPECT_EQ(5, max);
+	}
+
+	TEST(ArrayTests, MaxProfitBuySellTest)
+	{
+	  static const int arr1[] = {30, 31, 29, 28, 34, 26};
+	  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+	  int startIndex = 0, endIndex = 0;
+	  int profit = findWhenToBuySellForMaxProfit(arrlist1, startIndex, endIndex);
+	  EXPECT_EQ(6, profit);
+	  EXPECT_EQ(3, startIndex);
+	  EXPECT_EQ(4, endIndex);
+
+	  arrlist1.push_back(27);
+	  arrlist1.push_back(35);
+	  profit = findWhenToBuySellForMaxProfit(arrlist1, startIndex, endIndex);
+	  EXPECT_EQ(9, profit);
+	  EXPECT_EQ(5, startIndex);
+	  EXPECT_EQ(7, endIndex);
+	}
+
+	TEST(ArrayTests, LPSTest)
+	{
+	  static const int arr1[] = {1, 2, 3, -4, -5};
+	  std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+	  int startIndex = 0, endIndex = 0;
+	  int maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
+	  EXPECT_EQ(120, maxPro);
+	  EXPECT_EQ(0, startIndex);
+	  EXPECT_EQ(4, endIndex);
+
+	  arrlist1.push_back(-9);
+	  arrlist1.push_back(0);
+	  arrlist1.push_back(5);
+	  arrlist1.push_back(6);
+	  maxPro = getLargestProductSubsequence(arrlist1, startIndex, endIndex);
+	  EXPECT_EQ(120, maxPro);
+	  EXPECT_EQ(0, startIndex);
+	  EXPECT_EQ(4, endIndex);
 	}
 }
 

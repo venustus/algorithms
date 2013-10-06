@@ -15,6 +15,27 @@ Histogram::Histogram(std::vector<int> * heightsArr)
 	heights = heightsArr;
 }
 
+/**
+ * Given a histogram (an array of heights),
+ * find out a rectangle with largest area.
+ *
+ * Idea: Use stack data structure.
+ * Algorithm:
+ * 1) Maintain a stack of integer pairs - pair of the index of bar and
+ *    height of the bar at given index.
+ * 2) As long as the height increases, keep pushing bars to stack.
+ * 3) As soon as the height decreases, keep popping the bars from
+ *    stack until you encounter a bar that is of lesser height
+ *    than the current bar. At each such iteration, compute
+ *    the areas and keep a running max.
+ * 4) If the stack is not empty, make one final pass
+ *    over the stack and keep popping and computing areas
+ *    and updating max area if required.
+ * 5) Return the running max.
+ *
+ * Time complexity: O(n) where n is the number of bars.
+ * Space complexity: O(n)
+ */
 std::pair<int, int> Histogram::computeMaxAreaRectangle(int &area)
 {
 	int maxarea = 0;

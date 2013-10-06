@@ -12,6 +12,7 @@
 #include "min_coins_for_sum.h"
 #include "subsetswithsum.h"
 #include "integer_knapsack.h"
+#include "lpss.h"
 
 namespace {
   class DynamicProgrammingTests : public ::testing::Test {
@@ -89,13 +90,23 @@ namespace {
   	  EXPECT_EQ(220, maxValueInKnapSack);
     }
 
+  	TEST(DynamicProgrammingTests, LPSSTest)
+  	{
+  		std::string in = "BBABCBCAB";
+  		std::string result = getLongestPalindromeSubsequence(in);
+  		EXPECT_EQ("BACBCAB", result);
+
+  		in = "ABACDXYZZYXDFGABA";
+  		result = getLongestPalindromeSubsequence(in);
+  		EXPECT_EQ("ABADXYZZYXDABA", result);
+  	}
+
   TEST(DynamicProgrammingTests, SubsetWithSumTest)
   	{
   		static const int arr[] = {5, 10, 4, 6, 7, 8, 2, 1};
   		std::vector<int> arrlist(arr, arr + sizeof(arr)/sizeof(arr[0]));
   		std::set<int> * subsetWithSum = getSubsetsWithSum(&arrlist, 10);
   		ASSERT_TRUE(subsetWithSum != NULL);
-  		std::cout << "Subset with sum 10 found: ";
   		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
   		{
   			std::cout << (*it) << ", ";
@@ -103,7 +114,6 @@ namespace {
   		std::cout << std::endl;
   		subsetWithSum = getSubsetsWithSum(&arrlist, 19);
 		ASSERT_TRUE(subsetWithSum != NULL);
-		std::cout << "Subset with sum 19 found: ";
 		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
 		{
 			std::cout << (*it) << ", ";
@@ -111,7 +121,6 @@ namespace {
 		std::cout << std::endl;
 		subsetWithSum = getSubsetsWithSum(&arrlist, 15);
 		ASSERT_TRUE(subsetWithSum != NULL);
-		std::cout << "Subset with sum 19 found: ";
 		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
 		{
 			std::cout << (*it) << ", ";

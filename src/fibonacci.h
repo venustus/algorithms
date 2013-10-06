@@ -10,10 +10,6 @@
 
 /**
  * Returns nth fibonacci number.
- * Uses Dynamic Programming approach to iteratively compute
- * nth fibonacci number.
- * Time Complexity: O(n)
- * Space Complexity: O(n)
  */
 int getNthFibonacciNo(int n);
 

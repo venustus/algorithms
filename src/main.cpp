@@ -14,23 +14,6 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
-#include "string_reverse.h"
-#include "string_permute.h"
-#include "string_normalize.h"
-#include "stringcompress.h"
-#include "matrix_zero.h"
-#include "linked_lists.h"
-#include "threestacks.h"
-#include "stack_min.h"
-#include "setofstacks.h"
-#include "tower_of_hanoi.h"
-#include "myqueue.h"
-#include "stack_sort.h"
-#include "animal.h"
-#include "animalqueue.h"
-#include "binarytree.h"
-#include "graph.h"
-
 
 
 

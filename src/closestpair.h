@@ -39,5 +39,12 @@ public:
 	bool operator==(const PointPair & other) const;
 };
 
+/**
+ * Given a list of points in space, find a pair of points
+ * with closest euclidian distance.
+ */
 PointPair findClosestPair(std::vector<Point> * allPoints);
+
+PointPair findClosestPair(std::vector<Point> * xSortedPoints, std::vector<Point> * ySortedPoints);
+
 #endif /* CLOSETPAIR_H_ */

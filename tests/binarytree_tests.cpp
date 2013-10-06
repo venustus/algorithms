@@ -157,6 +157,19 @@ namespace {
 		}
 	}
 
+	TEST(BinaryTreeTests, RedBlackTreeTest)
+	{
+		BST<int> * tree = new BST<int>(1);
+		for(int i = 2; i < 100000; i++)
+		{
+			tree->appendNode(new TreeNode<int>(i));
+		}
+		int height = 0;
+		tree->isBalanced(height);
+		std::cout << "Height of the balanced binary tree is: " << height << std::endl;
+		ASSERT_TRUE(height < 40);
+	}
+
 	TEST(BinaryTreeTests, AdvancedTests) {
 		static const int treelistarr3[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 		std::vector<int> treelist3(treelistarr3, treelistarr3 + sizeof(treelistarr3)/sizeof(treelistarr3[0]));

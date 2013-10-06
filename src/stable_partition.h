@@ -17,8 +17,6 @@ void merge(int a[], int startIndex, int middleIndex, int endIndex);
  * such that all negative integers precede all positive integers.
  * The relative ordering among negative integers and among positive
  * integers is retained.
- * Time complexity: O(n log n)
- * Space complexity: O(1)
  */
 void stablePartition(int a[], int startIndex, int endIndex);
 

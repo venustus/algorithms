@@ -20,7 +20,7 @@ int computeProduct(std::vector<int>& a, int startIndex, int endIndex)
 }
 
 /**
- * Retrieves a sub-array of a given vector which has the maximum
+ * Retrieves a contiguous sub-array of a given vector which has the maximum
  * product of all sub arrays.
  * Algorithm:
  * 1) Divide the array into blocks separated by zeroes.

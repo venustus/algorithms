@@ -43,6 +43,29 @@ std::vector<T> * mergeAndCountSplitInversions(std::vector<T> * sortedFirstHalf,
 	return sortedArray;
 }
 
+/**
+ * Problem:
+ * Sort an array 'arr' and also count the number of inversions in the array.
+ * An inversion is any pair of elements a[i], a[j] such that a[i] < a[j], but i > j.
+ *
+ * Paradigm: Divide and conquer
+ * Algorithm:
+ * 1) Divide the array into two halves.
+ * 2) Recursively, sort and count inversions in the left half and right half.
+ * 3) Now that the left half is sorted and right half is sorted,
+ *    merge both the halves into a single sorted array while also counting
+ *    split inversions.
+ * 4) Merging is trivial just like in merge sort. When comparing an element a[i]
+ *    with an element a[j] where i and j are indexes in left half and right
+ *    half respectively, if a[i] > a[j], merge routine picks a[j], but at the same
+ *    time increments the split inversion count by (number of elements in right half - j).
+ * 5) Sum up the total number of inversions - inversions from left half, inversions from
+ *    right half and the number of split inversions counted by merge routine.
+ * 6) Return the sorted array and the count of split inversions.
+ *
+ * Time complexity: O(n log n)
+ * Space complexity: O(n)
+ */
 template<typename T>
 std::vector<T> * sortAndCountInversions(std::vector<T> * arr, long long int &count)
 {

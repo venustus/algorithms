@@ -19,8 +19,8 @@
  *
  * Algorithm:
  * 1) Intialize a 2D array m, such that m[i][j] represents
- *    the maximum value obtainable by including items from 0 through i
- *    and not exceeding the maximum weight of j.
+ *    the maximum value obtainable by including items from 0 through j
+ *    and not exceeding the maximum weight of i.
  * 2) m[0][j] = 0 for all j and m[i][0] = values[0] for all i.
  * 3) Compute the array m in a bottom-up fashion with two loops one
  *    going from 1 through c and the other over the values array

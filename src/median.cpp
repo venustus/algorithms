@@ -16,6 +16,9 @@
  * 2) If m1 < m2, then the median of the combined array cannot lie in (0, i1) or (i2, len(arr2)).
  *    This will reduce the overall size of the problem in half.
  * 3) Construct sub-arrays with the indexes given in previous step and go to step (1).
+ *
+ * Time complexity: O(log (m + n)) where m and n are sizes of arrays a and b.
+ * Space complexity: O(1)
  */
 int getMedianOfSortedArrays(std::vector<int>& a, std::vector<int>& b)
 {

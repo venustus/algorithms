@@ -12,6 +12,7 @@
 #include "stringcompress.h"
 #include "string_normalize.h"
 #include "anagram.h"
+#include "wildcard_expansion.h"
 
 namespace {
   class StringTests : public ::testing::Test {
@@ -95,6 +96,18 @@ namespace {
 	  std::string input4("else");
 	  value = areAnagrams(input3, input4);
 	  EXPECT_EQ(false, value);
+  }
+
+  TEST(StringTests, WildcardTest)
+  {
+	  std::string input("1?00?101");
+	  std::vector<std::string> * results = expandWildcards(input);
+	  EXPECT_EQ(4, results->size());
+	  for(std::vector<std::string>::iterator it = results->begin(); it != results->end(); ++it)
+	  {
+		  std::cout << *it << " ";
+	  }
+	  std::cout << std::endl;
   }
 }
 

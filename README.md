@@ -8,7 +8,7 @@ and can be readily used in your own projects.
 
 It contains the following data structures and algorithms as of now and is more will be coming each day.
 
-* Strings - Reversal, permutations, basic string compression, Anagram testing
+* Strings - Reversal, permutations, basic string compression, Anagram testing, wild card expansion
 * Sorting - Merge sort, randomized quick sort, median-of-3 quick sort
 * Linked Lists - insertion, deletion, detecting cycles, detecting palindromes
 * Stacks - Towers of hanoi problem, Min-stack, Set of stacks, Three-in-one stack, Computation of max-area under histogram using stacks, Stacks using queues
@@ -24,4 +24,6 @@ It contains the following data structures and algorithms as of now and is more w
                    biggest interval of contiguous numbers in an array
 * Dynamic Programming - Fibonacci number computation, Longest common subsequence, Largest sum subsequence, Edit distance problem
                         Minimum coins required to provide a sum, integer knapsack problem, subset sum problem
+                        Longest palindromic sub sequence of a given string.
 * Data structures - LRU Cache, Fixed capacity boolean vector
+* Greedy algorithms - Scheduling jobs minimizing weighted completion times.

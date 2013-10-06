@@ -17,6 +17,7 @@
 #include "steps_to_permutation.h"
 #include "biggest_interval.h"
 #include "lps.h"
+#include "find_majority.h"
 
 namespace {
 	class ArrayTests : public ::testing::Test {
@@ -35,6 +36,23 @@ namespace {
 		EXPECT_EQ(a[5], 7);
 		EXPECT_EQ(a[6], 3);
 		EXPECT_EQ(a[7], 2);
+
+		int b[14] = {-1, -4, 1, 3, 4, 6, 10, 11, -9, -10, -11, -12, 7, 9};
+		stablePartition(b, 0, 13);
+		EXPECT_EQ(b[0], -1);
+		EXPECT_EQ(b[1], -4);
+		EXPECT_EQ(b[2], -9);
+		EXPECT_EQ(b[3], -10);
+		EXPECT_EQ(b[4], -11);
+		EXPECT_EQ(b[5], -12);
+		EXPECT_EQ(b[6], 1);
+		EXPECT_EQ(b[7], 3);
+		EXPECT_EQ(b[8], 4);
+		EXPECT_EQ(b[9], 6);
+		EXPECT_EQ(b[10], 10);
+		EXPECT_EQ(b[11], 11);
+		EXPECT_EQ(b[12], 7);
+		EXPECT_EQ(b[13], 9);
 	}
 
 	TEST(ArrayTests, LongestIncreasingSubsequenceTest)
@@ -157,6 +175,19 @@ namespace {
 	  EXPECT_EQ(120, maxPro);
 	  EXPECT_EQ(0, startIndex);
 	  EXPECT_EQ(4, endIndex);
+	}
+
+	TEST(ArrayTests, FindMajorityTest)
+	{
+		static const int arr1[] = {1, 1, 2, 3, 4, 1, 6, 1, 7, 1, 1};
+		std::vector<int> arrlist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));
+		int majority = findMajority(arrlist1);
+		EXPECT_EQ(1, majority);
+
+		static const int arr2[] = {1, 9, 2, 3, 4, 1, 6, 1, 7, 1, 1};
+		std::vector<int> arrlist2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
+		majority = findMajority(arrlist2);
+		EXPECT_EQ(0, majority);
 	}
 }
 

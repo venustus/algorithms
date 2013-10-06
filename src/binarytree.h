@@ -18,6 +18,8 @@ using namespace std;
 #ifndef BINARYTREE_H_
 #define BINARYTREE_H_
 
+enum NODE_COLOR { RED, BLACK };
+
 template<class T> class TreeNode;
 template<class T> std::ostream& operator<<(std::ostream&, TreeNode<T>&);
 
@@ -43,6 +45,7 @@ class TreeNode
 	TreeNode<T> * right;
 	TreeNode<T> * parent;
 	bool visited;
+	NODE_COLOR color;
 
 public:
 	TreeNode(T val);
@@ -54,11 +57,13 @@ public:
 	TreeNode<T> * getLeft();
 	TreeNode<T> * getRight();
 	TreeNode<T> * getParent();
+	NODE_COLOR getColor();
 	bool isVisited();
 
 	void setLeft(TreeNode<T> * leftChild);
 	void setRight(TreeNode<T> * rightChild);
 	void setParent(TreeNode<T> * parent);
+	void setColor(NODE_COLOR color);
 	void setVisited();
 	void resetVisited();
 
@@ -270,6 +275,7 @@ TreeNode<T>::TreeNode(T value)
 	right = NULL;
 	parent = NULL;
 	visited = false;
+	color = BLACK;
 }
 
 template<class T>
@@ -286,6 +292,7 @@ TreeNode<T>::TreeNode()
 	val = NULL;
 	left = right = parent = NULL;
 	visited = false;
+	color = BLACK;
 }
 
 template<class T>
@@ -343,6 +350,12 @@ TreeNode<T> * TreeNode<T>::getParent()
 }
 
 template<class T>
+NODE_COLOR TreeNode<T>::getColor()
+{
+	return color;
+}
+
+template<class T>
 bool TreeNode<T>::isVisited()
 {
 	return visited;
@@ -364,6 +377,12 @@ template<class T>
 void TreeNode<T>::setParent(TreeNode<T> * parentNode)
 {
 	parent = parentNode;
+}
+
+template<class T>
+void TreeNode<T>::setColor(NODE_COLOR c)
+{
+	color = c;
 }
 
 template<class T>
@@ -1083,7 +1102,6 @@ void SumPath<T>::print() {
 	{
 		std::cout << (*it)->getValue() << " ";
 	}
-	std::cout << "Sum is: " << sum << std::endl;
 }
 
 template<class T>
@@ -1224,7 +1242,16 @@ class BST: public BinaryTree<T>
 	TreeNode<T> * findSettingVisited(T val, int& visitedCount,
 			  	  	  	  	  	  	 std::set<T>& setToFind);
 	LinkedList<T> * convertSubtreeToSortedList(TreeNode<T> * node);
+	void rotateLeft(TreeNode<T> * x);
+	void rotateRight(TreeNode<T> * x);
+	void flipColors(TreeNode<T> * x);
+	void restoreBalanceOnInsert(TreeNode<T> * z);
 public:
+	/**
+	 * Constructs a simple binary search tree containing
+	 * only the root with value 'val'.
+	 */
+	BST(T val);
 	/**
 	 * Constructs a binary search tree from a sorted array.
 	 * Time complexity: O(n)
@@ -1290,6 +1317,13 @@ public:
 	 */
 	LinkedList<T> * convertToSortedList();
 };
+
+template<class T>
+BST<T>::BST(T val)
+{
+	BinaryTree<T>::root = new TreeNode<T>(val);
+	BinaryTree<T>::root->setColor(BLACK);
+}
 
 /**
  * Constructs a BST from a sorted array.
@@ -1520,6 +1554,7 @@ void BST<T>::appendNode(TreeNode<T> * newNode)
 {
 	if(!BinaryTree<T>::root) {
 		BinaryTree<T>::root = newNode;
+		newNode->setColor(BLACK);
 		return;
 	}
 	TreeNode<T> * parent = BinaryTree<T>::root;
@@ -1545,6 +1580,146 @@ void BST<T>::appendNode(TreeNode<T> * newNode)
 			}
 		}
 	}
+	newNode->setColor(RED);
+	restoreBalanceOnInsert(newNode);
+}
+
+
+/**
+ * Rotates a sub tree rooted at x, to the left.
+ */
+template<class T>
+void BST<T>::rotateLeft(TreeNode<T> * x)
+{
+	TreeNode<T> * y = x->getRight();
+	x->setRight(y->getLeft());
+	if(y->getLeft())
+	{
+		y->getLeft()->setParent(x);
+	}
+	y->setParent(x->getParent());
+	if(!x->getParent())
+	{
+		BinaryTree<T>::root = y;
+	}
+	else if(x->getParent()->getLeft() == x)
+	{
+		x->getParent()->setLeft(y);
+	}
+	else
+	{
+		x->getParent()->setRight(y);
+	}
+	y->setLeft(x);
+	x->setParent(y);
+}
+
+/**
+ * Rotates a sub tree rooted at x, to the right.
+ */
+template<class T>
+void BST<T>::rotateRight(TreeNode<T> * x)
+{
+	TreeNode<T> * y = x->getLeft();
+	x->setLeft(y->getRight());
+	if(y->getRight())
+	{
+		y->getRight()->setParent(x);
+	}
+	y->setParent(x->getParent());
+	if(!x->getParent())
+	{
+		BinaryTree<T>::root = y;
+	}
+	else if(x->getParent()->getLeft() == x)
+	{
+		x->getParent()->setLeft(y);
+	}
+	else
+	{
+		x->getParent()->setRight(y);
+	}
+	y->setRight(x);
+	x->setParent(y);
+}
+
+/**
+ * Flips the colors of x and x's sibling with that of
+ * x's parent. Assumes that x's sibling is also RED
+ * and x's parent is BLACK.
+ */
+template<class T>
+void BST<T>::flipColors(TreeNode<T> * x)
+{
+	TreeNode<T> * y;
+	if(x->getColor() == BLACK)
+	{
+		return;
+	}
+	if(x->getParent()->getLeft() == x)
+	{
+		y = x->getParent()->getRight();
+	}
+	else
+	{
+		y = x->getParent()->getLeft();
+	}
+	if(!y || y->getColor() == BLACK)
+	{
+		return;
+	}
+	x->setColor(BLACK);
+	y->setColor(BLACK);
+	x->getParent()->setColor(RED);
+}
+
+template<class T>
+void BST<T>::restoreBalanceOnInsert(TreeNode<T> * z)
+{
+	while(z->getParent() && z->getParent()->getColor() == RED)
+	{
+		if(z->getParent() == z->getParent()->getParent()->getLeft())
+		{
+			TreeNode<T> * y = z->getParent()->getParent()->getRight();
+			if(y && y->getColor() == RED)
+			{
+				flipColors(y);
+				z = z->getParent()->getParent();
+			}
+			else
+			{
+				if(z == z->getParent()->getRight())
+				{
+					z = z->getParent();
+					rotateLeft(z);
+				}
+				z->getParent()->setColor(BLACK);
+				z->getParent()->getParent()->setColor(RED);
+				rotateRight(z->getParent()->getParent());
+			}
+		}
+		else
+		{
+			TreeNode<T> * y = z->getParent()->getParent()->getLeft();
+			if(y && y->getColor() == RED)
+			{
+				flipColors(y);
+				z = z->getParent()->getParent();
+			}
+			else
+			{
+				if(z == z->getParent()->getLeft())
+				{
+					z = z->getParent();
+					rotateRight(z);
+				}
+				z->getParent()->setColor(BLACK);
+				z->getParent()->getParent()->setColor(RED);
+				rotateLeft(z->getParent()->getParent());
+			}
+		}
+	}
+	BinaryTree<T>::root->setColor(BLACK);
 }
 
 /**

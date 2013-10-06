@@ -94,10 +94,30 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a40d85cab545a438af3e745e5a0fe3538"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40d85cab545a438af3e745e5a0fe3538"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Histogram</b> (std::vector&lt; int &gt; *heightsArr)</td></tr>
 <tr class="separator:a40d85cab545a438af3e745e5a0fe3538"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d43cea05d9799e2b8d7b2105c7c1cf6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d43cea05d9799e2b8d7b2105c7c1cf6"></a>
-std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>computeMaxAreaRectangle</b> (int &amp;area)</td></tr>
+<tr class="memitem:a6d43cea05d9799e2b8d7b2105c7c1cf6"><td class="memItemLeft" align="right" valign="top">std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_histogram.html#a6d43cea05d9799e2b8d7b2105c7c1cf6">computeMaxAreaRectangle</a> (int &amp;area)</td></tr>
 <tr class="separator:a6d43cea05d9799e2b8d7b2105c7c1cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a6d43cea05d9799e2b8d7b2105c7c1cf6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; int, int &gt; Histogram::computeMaxAreaRectangle </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>area</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a histogram (an array of heights), find out a rectangle with largest area.</p>
+<p>Given a histogram (an array of heights), find out a rectangle with largest area.</p>
+<p>Idea: Use stack data structure. Algorithm: 1) Maintain a stack of integer pairs - pair of the index of bar and height of the bar at given index. 2) As long as the height increases, keep pushing bars to stack. 3) As soon as the height decreases, keep popping the bars from stack until you encounter a bar that is of lesser height than the current bar. At each such iteration, compute the areas and keep a running max. 4) If the stack is not empty, make one final pass over the stack and keep popping and computing areas and updating max area if required. 5) Return the running max.</p>
+<p>Time complexity: O(n) where n is the number of bars. Space complexity: O(n) </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/<a class="el" href="histogram__rectangle_8h_source.html">histogram_rectangle.h</a></li>
 <li>src/histogram_rectangle.cpp</li>
@@ -105,7 +125,7 @@ std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 22 2013 09:25:04 for Algorithms by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Oct 6 2013 13:45:27 for Algorithms by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.5
 </small></address>

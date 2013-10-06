@@ -106,24 +106,6 @@ public:
 };
 
 
-//namespace std
-//{
-//	template<typename T>
-//	struct std::tr1::hash<DijkstraNode<T> >
-//	{
-//		std::size_t operator()(const DijkstraNode<T>& k) const
-//		{
-//		  using std::size_t;
-//		  using tr1::hash;
-//		  using std::string;
-//
-//		  GraphNode<T> * node = k.getNode();
-//
-//		  return hash<T>()(node->getValue());
-//		}
-//	};
-//}
-
 template<typename T>
 struct eq
 {
@@ -706,7 +688,6 @@ std::vector<DijkstraNode<T> > * Graph<T>::findShortestPaths(GraphNode<T> * sourc
 	while(heap->size() > 0)
 	{
 		DijkstraNode<T> nextNode = heap->findTop();
-		std::cout << "Sucking in node " << nextNode.getNode()->getValue() << " with score " << nextNode.getScore() << " into known vertices list" << std::endl;
 		shortestPaths->push_back(nextNode);
 		heap->removeTop();
 		GraphNode<T> * currNode = nextNode.getNode();
@@ -729,7 +710,6 @@ std::vector<DijkstraNode<T> > * Graph<T>::findShortestPaths(GraphNode<T> * sourc
 				}
 			}
 			DijkstraNode<T> updatedNode(affectedNode.getNode(), nextNode.getScore() + minWeight);
-			std::cout << "Updating weight of node " << affectedNode.getNode()->getValue() << " from " << affectedNode.getScore() << " to " << updatedNode.getScore() << std::endl;
 			heap->findAndUpdateKey(affectedNode, updatedNode);
 		}
 	}

@@ -56,7 +56,6 @@ int findMinNoOfCoinsForSum(int sum, std::vector<int>& values)
 		{
 			if(m[k] != 0) m[k] = std::min(kmin, m[k]);
 			else m[k] = kmin;
-			std::cout << "Coumputing m[" << k << "] = " << m[k] << std::endl;
 		}
 	}
 

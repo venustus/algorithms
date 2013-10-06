@@ -19,7 +19,6 @@ void swap(std::vector<int>& arr, int srcIndex, int destIndex, std::vector<SwapSt
 	arr[srcIndex] = arr[destIndex];
 	arr[destIndex] = temp;
 	steps.push_back(ss);
-	std::cout << "Swap " << ss.srcValue << " with " << ss.destValue << std::endl;
 }
 
 void swap(std::vector<int>& arr, int srcIndex, int destIndex, int zeroIndex, std::vector<SwapStep>& steps)

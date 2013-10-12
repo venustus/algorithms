@@ -14,6 +14,7 @@
 #include "graph.h"
 #include "binaryheap.h"
 #include "mincut.h"
+#include "word_chain.h"
 
 namespace {
 	class GraphTests : public ::testing::Test {
@@ -30,7 +31,7 @@ namespace {
 		static const int arr_bfs[] = {1, 2, 3, 4};
 		std::vector<int> bfslist(arr_bfs, arr_bfs + sizeof(arr_bfs)/sizeof(arr_bfs[0]));
 		std::vector<int> * bfsOrder = new std::vector<int>;
-		graph->bfs(bfsOrder);
+		graph->bfs(1, bfsOrder);
 		EXPECT_EQ(bfslist.at(0), bfsOrder->at(0));
 		EXPECT_EQ(bfslist.at(3), bfsOrder->at(3));
 		graph->reset();
@@ -39,7 +40,7 @@ namespace {
 		std::vector<int> dfslist(arr_dfs, arr_dfs + sizeof(arr_dfs)/sizeof(arr_dfs[0]));
 		std::vector<int> * dfsOrder = new std::vector<int>;
 		std::vector<int> * topoOrder = new std::vector<int>(4, 0);
-		graph->dfs(dfsOrder, topoOrder);
+		graph->dfs(1, dfsOrder, topoOrder);
 		EXPECT_EQ(dfslist.at(0), dfsOrder->at(0));
 		EXPECT_EQ(dfslist.at(2), dfsOrder->at(2));
 
@@ -126,6 +127,21 @@ namespace {
 			DijkstraNode<int> dNode = *it;
 			std::cout << "Shortest path to node " << dNode.getNode()->getValue() << " is " << dNode.getScore() << std::endl;
 		}
+	}
+
+	TEST(GraphTests, WordChainTest)
+	{
+		static const std::string str_arr[] = {"rainbow", "flipkart", "armour", "magenta", "telecom" };
+		std::vector<std::string> str_list(str_arr, str_arr + sizeof(str_arr)/sizeof(str_arr[0]));
+
+		std::vector<std::string> topoOrder = findWordChain(str_list);
+
+		static const std::string result_arr[] = {"flipkart", "telecom", "magenta", "armour", "rainbow"};
+		std::vector<std::string> result_list(result_arr, result_arr + sizeof(result_arr)/sizeof(result_arr[0]));
+		EXPECT_EQ(result_list, topoOrder);
+
+		static const std::string str_arr1[] = {"something", "machine", "elephant", "television", "rain" };
+		std::vector<std::string> str_list1(str_arr1, str_arr1 + sizeof(str_arr1)/sizeof(str_arr1[0]));
 	}
 }
 

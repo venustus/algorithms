@@ -15,11 +15,11 @@ namespace {
 
   class TestCacheBackend: public CacheBackend<int, int>
   {
-	  std::tr1::unordered_map<int, int> * testMap;
+	  std::unordered_map<int, int> * testMap;
   public:
 	  TestCacheBackend()
 	  {
-		  testMap = new std::tr1::unordered_map<int, int>;
+		  testMap = new std::unordered_map<int, int>;
 		  (*testMap)[0] = 0;
 		  (*testMap)[1] = 1;
 		  (*testMap)[2] = 4;
@@ -37,7 +37,7 @@ namespace {
 	  }
 	  int fetchFromBackend(int key)
 	  {
-		  std::tr1::unordered_map<int, int>::const_iterator it = testMap->find(key);
+		  std::unordered_map<int, int>::const_iterator it = testMap->find(key);
 		  return it->second;
 	  }
   };

@@ -13,9 +13,9 @@ using namespace std;
 
 #include <iostream>
 #include <vector>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <stack>
-#include <tr1/type_traits>
+#include <type_traits>
 #include "linked_list_node.h"
 
 /**
@@ -25,8 +25,8 @@ using namespace std;
 template <class T>
 class LinkedList
 {
-	typedef tr1::unordered_map<T, int> HashTable;
-	typedef tr1::unordered_map<T, Node<T> * > ValueHash;
+	typedef unordered_map<T, int> HashTable;
+	typedef unordered_map<T, Node<T> * > ValueHash;
 	Node<T> * head;
 	Node<T> * tail;
 	int listSize;
@@ -500,7 +500,7 @@ void LinkedList<T>::print()
 		while(temp)
 		{
 			T t = temp->getValue();
-			if(tr1::is_pointer<T>::value)
+			if(std::is_pointer<T>::value)
 			{
 				//std::cout << *t << ' ';
 			}

@@ -6,7 +6,7 @@
  */
 
 #include <vector>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include "biggest_interval.h"
 
 /**
@@ -25,7 +25,7 @@
  */
 int findBiggestContiguousInterval(std::vector<int>& in, int& min, int& max)
 {
-	std::tr1::unordered_map<int, bool> * inputSet = new std::tr1::unordered_map<int, bool>;
+	std::unordered_map<int, bool> * inputSet = new std::unordered_map<int, bool>;
 	for(int i = 0; i < in.size(); i++)
 	{
 		inputSet->insert(std::make_pair(in[i], true));
@@ -35,7 +35,7 @@ int findBiggestContiguousInterval(std::vector<int>& in, int& min, int& max)
 	int maxRange = 0;
 	while(inputSet->size() > 0)
 	{
-		std::tr1::unordered_map<int, bool>::const_iterator it = inputSet->begin();
+		std::unordered_map<int, bool>::const_iterator it = inputSet->begin();
 		int currentInt = it->first;
 		inputSet->erase(it);
 		int currentSetSize = 1;
@@ -44,7 +44,7 @@ int findBiggestContiguousInterval(std::vector<int>& in, int& min, int& max)
 		int i = 1;
 		while(true)
 		{
-			std::tr1::unordered_map<int, bool>::const_iterator it1 = inputSet->find(currentInt + (i++));
+			std::unordered_map<int, bool>::const_iterator it1 = inputSet->find(currentInt + (i++));
 			if(it1 == inputSet->end())
 			{
 				break;
@@ -56,7 +56,7 @@ int findBiggestContiguousInterval(std::vector<int>& in, int& min, int& max)
 		i = 1;
 		while(true)
 		{
-			std::tr1::unordered_map<int, bool>::const_iterator it1 = inputSet->find(currentInt - (i++));
+			std::unordered_map<int, bool>::const_iterator it1 = inputSet->find(currentInt - (i++));
 			if(it1 == inputSet->end())
 			{
 				break;

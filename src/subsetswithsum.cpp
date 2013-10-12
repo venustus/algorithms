@@ -8,7 +8,7 @@
 #include <set>
 #include <vector>
 #include <iostream>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <stdexcept>
 #include "subsetswithsum.h"
 

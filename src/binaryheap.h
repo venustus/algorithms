@@ -6,11 +6,10 @@
  */
 
 
-using namespace std;
-
+#include <cmath>
 #include <vector>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 
 #ifndef BINARYHEAP_H_
 #define BINARYHEAP_H_
@@ -32,7 +31,7 @@ template<class T>
 class BinaryHeap
 {
 	std::vector<T> * array;
-	tr1::function<bool(T, T)> compareObj;
+	std::function<bool(T, T)> compareObj;
 	bool maxHeap;
 	void heapify(int index);
 	int getParentIndex(int i);

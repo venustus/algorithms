@@ -70,7 +70,7 @@ template<class K, class V>
 class LRUCache
 {
 	LinkedList<CacheItem<K, V> * > * cacheQueue;
-	tr1::unordered_map<K, Node<CacheItem<K, V> * > * > * items;
+	std::unordered_map<K, Node<CacheItem<K, V> * > * > * items;
 	CacheBackend<K, V> * backend;
 	int capacity;
 public:
@@ -85,7 +85,7 @@ LRUCache<K, V>::LRUCache(int c, CacheBackend<K, V> * backendImpl)
 	capacity = c;
 	backend = backendImpl;
 	cacheQueue = new LinkedList<CacheItem<K, V> * >;
-	items = new tr1::unordered_map<K, Node<CacheItem<K, V> * > * >;
+	items = new std::unordered_map<K, Node<CacheItem<K, V> * > * >;
 }
 
 template<class K, class V>
@@ -98,7 +98,7 @@ LRUCache<K, V>::~LRUCache()
 template<class K, class V>
 V LRUCache<K, V>::find(K key)
 {
-	typename tr1::unordered_map<K, Node<CacheItem<K, V> * > * >::const_iterator it = items->find(key);
+	typename std::unordered_map<K, Node<CacheItem<K, V> * > * >::const_iterator it = items->find(key);
 	if(it == items->end())
 	{
 		V value = backend->fetchFromBackend(key);

@@ -55,6 +55,7 @@ char * compress(char *orig, int len)
 			*(compStr + j + (k++)) = *it;
 		}
 		j = j + k;
+        *(compStr + j) = '\0';
 	}
 	else
 	{

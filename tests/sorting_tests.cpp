@@ -62,7 +62,6 @@ namespace {
 			}
 			integerArray.close();
 		}
-		std::cout << "Size of the big list is: " << biglist->size() << std::endl;
 
 		int numberOfComparisons = 0;
 		std::vector<int> * biglistcopy = new std::vector<int>(*biglist);
@@ -71,17 +70,17 @@ namespace {
 		{
 			ASSERT_TRUE(*it < *(it + 1));
 		}
-		std::cout << "Number of comparisons for naivequicksort: " << numberOfComparisons << std::endl;
+        ASSERT_EQ(162085, numberOfComparisons);
 
 		biglistcopy = new std::vector<int>(*biglist);
 		numberOfComparisons = 0;
 		naivequicksort2(biglistcopy, 0, biglist->size() - 1, numberOfComparisons);
-		std::cout << "Number of comparisons for naivequicksort 2: " << numberOfComparisons << std::endl;
+        ASSERT_EQ(164123, numberOfComparisons);
 
 		biglistcopy = new std::vector<int>(*biglist);
 		numberOfComparisons = 0;
 		medianof3quicksort(biglistcopy, 0, biglist->size() - 1, numberOfComparisons);
-		std::cout << "Number of comparisons for median of 3 quicksort: " << numberOfComparisons << std::endl;
+        ASSERT_EQ(138382, numberOfComparisons);
 	}
 
 	TEST(SortingTests, InversionsTest)
@@ -117,10 +116,8 @@ namespace {
 			}
 			integerArray.close();
 		}
-		std::cout << "Size of the big list is: " << biglist->size() << std::endl;
 		numInversions = 0;
 		sortedList = sortAndCountInversions(biglist, numInversions);
-		std::cout << "Number of inversions in an array of 100000 is: " << numInversions << std::endl;
 		EXPECT_EQ(numInversions, 2407905288);
 	}
 }

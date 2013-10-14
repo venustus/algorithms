@@ -148,7 +148,7 @@ namespace {
 		LinkedList<int> * sortedList = tree->convertToSortedList();
 		EXPECT_EQ(10, sortedList->size());
 		Node<int> * head = sortedList->getHead();
-		sortedList->print();
+		//sortedList->print();
 		for(int i = 1; i < 11; i++)
 		{
 			ASSERT_TRUE(head != NULL);
@@ -166,7 +166,7 @@ namespace {
 		}
 		int height = 0;
 		tree->isBalanced(height);
-		std::cout << "Height of the balanced binary tree is: " << height << std::endl;
+		//std::cout << "Height of the balanced binary tree is: " << height << std::endl;
 		ASSERT_TRUE(height < 40);
 	}
 

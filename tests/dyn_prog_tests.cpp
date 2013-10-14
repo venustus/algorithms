@@ -107,25 +107,25 @@ namespace {
   		std::vector<int> arrlist(arr, arr + sizeof(arr)/sizeof(arr[0]));
   		std::set<int> * subsetWithSum = getSubsetsWithSum(&arrlist, 10);
   		ASSERT_TRUE(subsetWithSum != NULL);
-  		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
-  		{
-  			std::cout << (*it) << ", ";
-  		}
-  		std::cout << std::endl;
+//  		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
+//  		{
+//  			std::cout << (*it) << ", ";
+//  		}
+//  		std::cout << std::endl;
   		subsetWithSum = getSubsetsWithSum(&arrlist, 19);
 		ASSERT_TRUE(subsetWithSum != NULL);
-		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
-		{
-			std::cout << (*it) << ", ";
-		}
-		std::cout << std::endl;
+//		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
+//		{
+//			std::cout << (*it) << ", ";
+//		}
+//		std::cout << std::endl;
 		subsetWithSum = getSubsetsWithSum(&arrlist, 15);
 		ASSERT_TRUE(subsetWithSum != NULL);
-		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
-		{
-			std::cout << (*it) << ", ";
-		}
-		std::cout << std::endl;
+//		for(std::set<int>::iterator it = subsetWithSum->begin(); it != subsetWithSum->end(); ++it)
+//		{
+//			std::cout << (*it) << ", ";
+//		}
+//		std::cout << std::endl;
 		subsetWithSum = getSubsetsWithSum(&arrlist, 45);
 		ASSERT_TRUE(subsetWithSum == NULL);
   	}

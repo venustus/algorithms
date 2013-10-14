@@ -104,15 +104,13 @@ V LRUCache<K, V>::find(K key)
 		V value = backend->fetchFromBackend(key);
 		CacheItem<K, V> * ci = new CacheItem<K, V>(key, value);
 		Node<CacheItem<K, V> * > * newNode = new Node<CacheItem<K, V> * >(ci);
-		std::cout << "Queue capacity is: " << cacheQueue->size() << std::endl;
 		if(cacheQueue->size() >= capacity)
 		{
-			std::cout << "Deleting node " << cacheQueue->getTail() << std::endl;
 			cacheQueue->deleteNode(cacheQueue->getTail());
 		}
 		cacheQueue->appendHead(newNode);
 		(*items)[key] = newNode;
-		cacheQueue->print();
+//		cacheQueue->print();
 		return value;
 	}
 	else
@@ -122,7 +120,7 @@ V LRUCache<K, V>::find(K key)
 		cacheQueue->deleteNode(foundNode);
 		cacheQueue->appendHead(newNode);
 		(*items)[key] = newNode;
-		cacheQueue->print();
+//		cacheQueue->print();
 		return newNode->getValue()->getValue();
 	}
 }

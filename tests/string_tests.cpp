@@ -103,11 +103,9 @@ namespace {
 	  std::string input("1?00?101");
 	  std::vector<std::string> * results = expandWildcards(input);
 	  EXPECT_EQ(4, results->size());
-	  for(std::vector<std::string>::iterator it = results->begin(); it != results->end(); ++it)
-	  {
-		  std::cout << *it << " ";
-	  }
-	  std::cout << std::endl;
+      static const std::string str_arr[] = {"10000101", "11000101", "10001101", "11001101"};
+      std::vector<std::string> str_list(str_arr, str_arr + sizeof(str_arr)/sizeof(str_arr[0]));
+	  EXPECT_EQ(str_list, *results);
   }
 }
 

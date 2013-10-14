@@ -53,7 +53,6 @@ T findMajority(std::vector<T>& input)
 			}
 		}
 	}
-	std::cout << "Count of " << prev << " is: " << cnt << std::endl;
 	if(cnt > 0)
 	{
 		cnt = 0;

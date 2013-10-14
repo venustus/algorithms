@@ -572,7 +572,7 @@ void BinaryTree<T>::traverseInOrder(TreeNode<T> * root, vector<T> &inorderList)
 		return;
 	}
 	traverseInOrder(root->getLeft(), inorderList);
-	cout << root->getValue() << " ";
+	//cout << root->getValue() << " ";
 	inorderList.push_back(root->getValue());
 	traverseInOrder(root->getRight(), inorderList);
 }
@@ -586,7 +586,7 @@ void BinaryTree<T>::traversePostOrder(TreeNode<T> * root, vector<T> &postorderLi
 	}
 	traversePostOrder(root->getLeft(), postorderList);
 	traversePostOrder(root->getRight(), postorderList);
-	cout << root->getValue() << " ";
+	//cout << root->getValue() << " ";
 	postorderList.push_back(root->getValue());
 }
 
@@ -594,21 +594,21 @@ template<class T>
 void BinaryTree<T>::printInOrder(vector<T> &inorderList)
 {
 	traverseInOrder(root, inorderList);
-	cout << endl;
+	//cout << endl;
 }
 
 template<class T>
 void BinaryTree<T>::printPreOrder(vector<T> &preorderList)
 {
 	traversePreOrder(root, preorderList);
-	cout << endl;
+	//cout << endl;
 }
 
 template<class T>
 void BinaryTree<T>::printPostOrder(vector<T> &postorderList)
 {
 	traversePostOrder(root, postorderList);
-	cout << endl;
+	//cout << endl;
 }
 
 template<class T>
@@ -622,7 +622,7 @@ void BinaryTree<T>::printInOrderNoRecurse(vector<T> &inorderList)
 		nodeStack->pop();
 		if(topNode->isVisited())
 		{
-			cout << topNode->getValue() << " ";
+			//cout << topNode->getValue() << " ";
 			topNode->resetVisited();
 			inorderList.push_back(topNode->getValue());
 		}
@@ -640,7 +640,7 @@ void BinaryTree<T>::printInOrderNoRecurse(vector<T> &inorderList)
 			topNode->setVisited();
 		}
 	}
-	cout << endl;
+	//cout << endl;
 }
 
 template<class T>
@@ -650,7 +650,7 @@ void BinaryTree<T>::traversePreOrder(TreeNode<T> * n, vector<T> &preorderList)
 	{
 		return;
 	}
-	cout << n->getValue() << " ";
+	//cout << n->getValue() << " ";
 	preorderList.push_back(n->getValue());
 	traversePreOrder(n->getLeft(), preorderList);
 	traversePreOrder(n->getRight(), preorderList);
@@ -680,12 +680,12 @@ void BinaryTree<T>::printPreOrderNoRecurse(vector<T> &preorderList)
 		}
 		else
 		{
-			cout << top->getValue() << " ";
+			//cout << top->getValue() << " ";
 			top->resetVisited();
 			preorderList.push_back(top->getValue());
 		}
 	}
-	cout << endl;
+	//cout << endl;
 }
 
 template<class T>
@@ -712,7 +712,7 @@ void BinaryTree<T>::printPostOrderNoRecurse(vector<T> &postorderList)
 		}
 		else
 		{
-			cout << top->getValue() << " ";
+			//cout << top->getValue() << " ";
 			top->resetVisited();
 			postorderList.push_back(top->getValue());
 		}
@@ -728,7 +728,7 @@ void BinaryTree<T>::printNormal(vector<T> &normalorderList)
 	{
 		TreeNode<T> * front = bfsqueue->front();
 		bfsqueue->pop();
-		cout << front->getValue() << " ";
+		//cout << front->getValue() << " ";
 		normalorderList.push_back(front->getValue());
 		if(front->getLeft())
 		{
@@ -739,7 +739,7 @@ void BinaryTree<T>::printNormal(vector<T> &normalorderList)
 			bfsqueue->push(front->getRight());
 		}
 	}
-	cout << endl;
+	//cout << endl;
 }
 
 /**

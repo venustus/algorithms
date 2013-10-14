@@ -6,6 +6,7 @@
  */
 
 #include <functional>
+#include <vector>
 #include "word_chain.h"
 #include "graph.h"
 
@@ -69,6 +70,44 @@ std::vector<std::string> findWordChain(std::vector<std::string>& input)
 		prev = curr;
 	}
 	return topoOrder;
+}
+
+std::vector<std::string> findWordChain2(std::vector<std::string>& input)
+{
+    std::vector<std::string> results;
+    Graph<char> charGraph(true);
+    for(std::vector<std::string>::iterator it = input.begin(); it != input.end(); ++it)
+    {
+        std::string currWord = *it;
+        charGraph.addEdge(currWord.at(0), currWord.at(currWord.length() - 1), 1, currWord);
+    }
+    std::vector<GraphNode<char> * > * eulerianPath = charGraph.getEulerianPath();
+
+    if(!eulerianPath)
+    {
+        return results;
+    }
+    for(std::vector<std::string>::iterator it = input.begin(); it != input.end(); ++it)
+    {
+        std::string currWord = *it;
+        charGraph.addEdge(currWord.at(0), currWord.at(currWord.length() - 1), 1, currWord);
+    }
+    std::unordered_map<char, GraphNode<char> * > * vertices = charGraph.getVertices();
+    for(std::vector<GraphNode<char> * >::iterator it = eulerianPath->begin(); it != eulerianPath->end(); ++it)
+    {
+        GraphNode<char> * u = *it;
+        if(it != eulerianPath->end() - 1)
+        {
+            GraphNode<char> * v = *(it + 1);
+            GraphNode<char> * w = vertices->find(u->getValue())->second;
+            GraphNode<char> * x = vertices->find(v->getValue())->second;
+            std::set<GraphEdge<char> * > * edges = w->getNeighbours()->at(x);
+            std::set<GraphEdge<char> * >::iterator anyEdgeIter = edges->begin();
+            GraphEdge<char> * anyEdge = *anyEdgeIter;
+            results.push_back(anyEdge->getLabel());
+        }
+    }
+    return results;
 }
 
 

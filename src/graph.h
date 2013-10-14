@@ -12,6 +12,7 @@
 #include <functional>
 #include <queue>
 #include <vector>
+#include <stack>
 #include <set>
 #include <stdexcept>
 #include <limits>
@@ -40,9 +41,10 @@ public:
 	T getValue();
 
 	std::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * > * getNeighbours();
-
-	std::set<GraphEdge<T> * > * getIncidentEdges();
-
+    std::set<GraphEdge<T> * > * getIncidentEdges();
+    int getInDegree();
+    int getOutDegree();
+    
 	void addNeighbour(GraphNode<T> * neighbour, GraphEdge<T> * edgeIndex);
 	void addIncidentEdge(GraphEdge<T> * incidentEdge);
 
@@ -58,13 +60,16 @@ class GraphEdge
 {
 	std::pair<GraphNode<T> *, GraphNode<T> * > vertexPair;
 	long weight;
+    std::string label;
 public:
 	GraphEdge(GraphNode<T> * first, GraphNode<T> * second);
 	GraphEdge(GraphNode<T> * first, GraphNode<T> * second, long weight);
+    GraphEdge(GraphNode<T> * first, GraphNode<T> * second, long weight, std::string label);
 	~GraphEdge();
 	GraphNode<T> * getFirst();
 	GraphNode<T> * getSecond();
 	long getWeight();
+    std::string getLabel();
 	void replaceVertex(GraphNode<T> * vertex, GraphNode<T> * replacement);
 	bool operator==(const GraphEdge &other)
 	{
@@ -120,6 +125,7 @@ GraphEdge<T>::GraphEdge(GraphNode<T> * first, GraphNode<T> * second)
 {
 	vertexPair = std::make_pair(first, second);
 	weight = 1;
+    label = "";
 }
 
 template<class T>
@@ -127,6 +133,15 @@ GraphEdge<T>::GraphEdge(GraphNode<T> * first, GraphNode<T> * second, long edgeWe
 {
 	vertexPair = std::make_pair(first, second);
 	weight = edgeWeight;
+    label = "";
+}
+
+template<class T>
+GraphEdge<T>::GraphEdge(GraphNode<T> * first, GraphNode<T> * second, long edgeWeight, std::string l)
+{
+    vertexPair = std::make_pair(first, second);
+    weight = edgeWeight;
+    label = l;
 }
 
 template<class T>
@@ -171,6 +186,12 @@ long GraphEdge<T>::getWeight()
 {
 	return weight;
 }
+template<class T>
+std::string GraphEdge<T>::getLabel()
+{
+    return label;
+}
+
 
 template<class T>
 GraphNode<T>::GraphNode(T nodeData)
@@ -200,6 +221,18 @@ template<class T>
 std::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * > * GraphNode<T>::getNeighbours()
 {
 	return neighbours;
+}
+
+template<class T>
+int GraphNode<T>::getInDegree()
+{
+    return incidentEdges->size();
+}
+
+template<class T>
+int GraphNode<T>::getOutDegree()
+{
+    return neighbours->size();
 }
 
 template<class T>
@@ -255,6 +288,8 @@ class Graph
 	void dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder,
 					  std::vector<T> * topologicalOrder, int &topoLabel);
 	std::set<std::set<T> * > * getConnectedComponentsUndirected();
+    std::vector<GraphNode<T> * > * getEulerianPathUndirected();
+    std::vector<GraphNode<T> * > * getEulerianPathDirected();
 public:
 	Graph(bool directed);
 	Graph(Graph<T> * copy);
@@ -262,6 +297,10 @@ public:
 
 	void addEdge(T a, T b);
 	void addEdge(T a, T b, long weight);
+    void addEdge(T a, T b, long weight, std::string label);
+    void addVertex(T a);
+    void removeEdge(T a, T b);
+    void removeEdge(GraphNode<T> * a, GraphNode<T> * b);
 	void dfs(std::vector<T> * dfsOrder, std::vector<T> * topologicalOrder);
     void dfs(T start, std::vector<T> * dfsOrder, std::vector<T> * topologicalOrder);
 	void bfs(std::vector<T> * bfsOrder);
@@ -269,6 +308,7 @@ public:
 	void deleteVertex(GraphNode<T> * vertex);
 	bool pathExists(T a, T b);
 	std::set<std::set<T> * > * getConnectedComponents();
+    std::vector<GraphNode<T> * > * getEulerianPath();
 	GraphEdge<T> * getIthEdge(int i);
 	void contractEdge(int edgeIndex);
 	void reset();
@@ -295,7 +335,7 @@ Graph<T>::Graph(Graph<T> * copy)
 	for(typename std::vector<GraphEdge<T> * >::iterator it = copy->getEdges()->begin(); it != copy->getEdges()->end(); ++it)
 	{
 		GraphEdge<T> * edge = *it;
-		addEdge(edge->getFirst()->getValue(), edge->getSecond()->getValue());
+		addEdge(edge->getFirst()->getValue(), edge->getSecond()->getValue(), edge->getWeight(), edge->getLabel());
 	}
 }
 
@@ -348,7 +388,7 @@ void Graph<T>::addEdge(T a, T b)
 }
 
 template<class T>
-void Graph<T>::addEdge(T a, T b, long weight)
+void Graph<T>::addEdge(T a, T b, long weight, std::string label)
 {
 	GraphNode<T> * vertex1, * vertex2;
 	typename std::unordered_map<T, GraphNode<T> * >::const_iterator vertex1_it = vertices->find(a);
@@ -380,7 +420,7 @@ void Graph<T>::addEdge(T a, T b, long weight)
 			neighbours->find(vertex2);
 	if(edgeMapIt == neighbours->end())
 	{
-		GraphEdge<T> * newEdge = new GraphEdge<T>(vertex1, vertex2, weight);
+		GraphEdge<T> * newEdge = new GraphEdge<T>(vertex1, vertex2, weight, label);
 		vertex1->addNeighbour(vertex2, newEdge);
 		if(!directed)
 		{
@@ -395,6 +435,62 @@ void Graph<T>::addEdge(T a, T b, long weight)
 }
 
 template<class T>
+void Graph<T>::addEdge(T a, T b, long weight)
+{
+    addEdge(a, b, weight, "");
+}
+
+template<class T>
+void Graph<T>::addVertex(T a)
+{
+    GraphNode<T> * vertex = new GraphNode<T>(a);
+    std::pair<T, GraphNode<T> * > vertex_pair(a, vertex);
+    vertices->insert(vertex_pair);
+}
+
+template<class T>
+void Graph<T>::removeEdge(GraphNode<T> * vertex1, GraphNode<T> * vertex2)
+{
+    std::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * > * neighbours = vertex1->getNeighbours();
+    neighbours->erase(vertex2);
+    if(!directed)
+    {
+        neighbours = vertex2->getNeighbours();
+        neighbours->erase(vertex1);
+    }
+    for(typename std::vector<GraphEdge<T> * >::iterator it = edges->begin(); it != edges->end();)
+    {
+        GraphEdge<T> * currEdge = *it;
+        if(currEdge->getFirst() == vertex1 && currEdge->getSecond() == vertex2 ||
+                (!directed && currEdge->getFirst() == vertex2 && currEdge->getSecond() == vertex1))
+        {
+            it = edges->erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+     
+template<class T>
+void Graph<T>::removeEdge(T a, T b)
+{
+    GraphNode<T> * vertex1, * vertex2;
+    typename std::unordered_map<T, GraphNode<T> * >::const_iterator vertex1_it = vertices->find(a);
+    typename std::unordered_map<T, GraphNode<T> * >::const_iterator vertex2_it = vertices->find(b);
+    if(vertex1_it == vertices->end() || vertex2_it == vertices->end())
+	{
+		return;
+    }
+	else
+	{
+        removeEdge(vertex1_it->second, vertex2_it->second);
+    }
+}
+
+
+template<class T>
 GraphEdge<T> * Graph<T>::getIthEdge(int i)
 {
 	return edges->at(i);
@@ -406,7 +502,7 @@ void Graph<T>::contractEdge(int edgeIndex)
 	GraphEdge<T> * edge = edges->at(edgeIndex);
 	GraphNode<T> * firstVertex = edge->getFirst();
 	GraphNode<T> * secondVertex = edge->getSecond();
-	//std::cout << "Contracting edge " << firstVertex->getValue() << " -> " << secondVertex->getValue() << std::endl;
+//	std::cout << "Contracting edge " << firstVertex->getValue() << " -> " << secondVertex->getValue() << std::endl;
 	if(secondVertex->getNeighbours()->size() > 0)
 	{
 		for(typename std::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * >::iterator it = secondVertex->getNeighbours()->begin();
@@ -458,8 +554,6 @@ void Graph<T>::contractEdge(int edgeIndex)
 	}
 	firstVertex->getNeighbours()->erase(secondVertex);
 	deleteVertex(secondVertex);
-	//std::cout << "Number of vertices: " << vertices->size() << std::endl;
-	//std::cout << "Number of edges: " << edges->size() << std::endl;
 }
 
 template<class T>
@@ -496,7 +590,6 @@ void Graph<T>::dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder,
 							std::vector<T> * topologicalOrder, int &topoLabel)
 {
 	node->setVisited(GRAY);
-	std::cout << node->getValue() << " ";
 	dfsOrder->push_back(node->getValue());
 	std::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * > * neighbours = node->getNeighbours();
 	if(neighbours->size() > 0)
@@ -512,7 +605,6 @@ void Graph<T>::dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder,
 		}
 	}
 	node->setVisited(BLACK);
-	std::cout << "Finished vertex " << node->getValue() << std::endl;
 	topologicalOrder->at(topoLabel--) = node->getValue();
 }
 
@@ -549,7 +641,7 @@ void Graph<T>::bfs(T start, std::vector<T> * bfsOrder)
     {
         GraphNode<T> * currNode = bfsQueue->front();
         bfsQueue->pop();
-        std::cout << currNode->getValue() << " ";
+//        std::cout << currNode->getValue() << " ";
         bfsOrder->push_back(currNode->getValue());
         
         if(currNode->getNeighbours()->size() > 0)
@@ -586,7 +678,7 @@ void Graph<T>::bfs(std::vector<T> * bfsOrder)
 		{
 			GraphNode<T> * currNode = bfsQueue->front();
 			bfsQueue->pop();
-			std::cout << currNode->getValue() << " ";
+//			std::cout << currNode->getValue() << " ";
 			bfsOrder->push_back(currNode->getValue());
 
 			if(currNode->getNeighbours()->size() > 0)
@@ -642,6 +734,7 @@ std::set<std::set<T> * > * Graph<T>::getConnectedComponentsUndirected()
 	std::set<std::set<T> * > * components = new std::set<std::set<T> * >;
 	std::vector<T> topologicalOrder;
 	int topoLabel = vertices->size() - 1;
+    topologicalOrder.resize(vertices->size());
 	for(typename std::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
 	{
 		GraphNode<T> * node = it->second;
@@ -655,6 +748,91 @@ std::set<std::set<T> * > * Graph<T>::getConnectedComponentsUndirected()
 		}
 	}
 	return components;
+}
+
+template<class T>
+std::vector<GraphNode<T> * > * Graph<T>::getEulerianPath()
+{
+    if(directed)
+    {
+        return getEulerianPathDirected();
+    }
+    else
+    {
+        return getEulerianPathUndirected();
+    }
+}
+
+template<class T>
+std::vector<GraphNode<T> * > * Graph<T>::getEulerianPathUndirected()
+{
+    std::stack<GraphNode<T> * > * st = new std::stack<GraphNode<T> * >;
+    return NULL;
+}
+
+template<class T>
+std::vector<GraphNode<T> * > * Graph<T>::getEulerianPathDirected()
+{
+    std::stack<GraphNode<T> * > * st = new std::stack<GraphNode<T> * >;
+    std::vector<GraphNode<T> * > * eulerianPath = new std::vector<GraphNode<T> * >;
+    GraphNode<T> * startVertex = NULL, * endVertex = NULL;
+    GraphNode<T> * currentVertex = NULL;
+    for(typename std::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
+    {
+        GraphNode<T> * v = it->second;
+        if(v->getInDegree() > v->getOutDegree())
+        {
+            if(endVertex != NULL)
+            {
+                // more than one vertex has its in degree greater than out degree
+                // eulerian path not possible
+                return NULL;
+            }
+            endVertex = v;
+        }
+        if(v->getInDegree() < v->getOutDegree())
+        {
+            if(startVertex != NULL)
+            {
+                // more than one vertex has its in degree less than out degree
+                // eulerian path not possible
+                return NULL;
+            }
+            startVertex = v;
+        }
+    }
+    if(startVertex == NULL && endVertex == NULL)
+    {
+        startVertex = vertices->begin()->second;
+    }
+    else if(startVertex == NULL || endVertex == NULL)
+    {
+        return NULL;
+    }
+    currentVertex = startVertex;
+    while(currentVertex->getNeighbours()->size() > 0 ||
+            !st->empty())
+    {
+        if(currentVertex->getNeighbours()->size() == 0)
+        {
+            eulerianPath->push_back(currentVertex);
+            currentVertex = st->top();
+            st->pop();
+        }
+        else
+        {
+            st->push(currentVertex);
+            typename std::unordered_map<GraphNode<T> *, std::set<GraphEdge<T> * > * >::iterator it =
+                currentVertex->getNeighbours()->begin();
+            GraphNode<T> * otherVertex = it->first;
+            removeEdge(currentVertex, otherVertex);
+            currentVertex = otherVertex;
+        }
+    }
+    eulerianPath->push_back(currentVertex);
+    delete st;
+    std::reverse(eulerianPath->begin(), eulerianPath->end());
+    return eulerianPath;
 }
 
 template<class T>

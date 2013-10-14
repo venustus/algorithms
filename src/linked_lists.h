@@ -367,7 +367,6 @@ void LinkedList<T>::insert(Node<T> *node, Node<T> *nextTo)
 		nextTo->setNext(node);
 		node->setPrev(nextTo);
 		listSize++;
-		std::cout << "List size is now: " << listSize << std::endl;
 	}
 }
 
@@ -570,7 +569,6 @@ Node<T> * LinkedList<T>::cycleStart()
 		slowRunner = slowRunner->getNext();
 		if(fastRunner == slowRunner)
 		{
-			cout << "Detected a cycle" << endl;
 			break;
 		}
 	}

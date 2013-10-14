@@ -77,7 +77,7 @@ namespace {
 		graph->addEdge(3, 4);
 
 		int minCut = findMinCut(graph);
-		EXPECT_EQ(minCut, 2);
+		EXPECT_EQ(2, minCut);
 
 		delete graph;
 		graph = new Graph<int>(false);
@@ -102,10 +102,11 @@ namespace {
 				}
 			}
 			graphInput.close();
-			std::cout << "Number of vertices: " << graph->getVertices()->size() << std::endl;
-			std::cout << "Number of edges: " << graph->getEdges()->size() << std::endl;
+//			std::cout << "Number of vertices: " << graph->getVertices()->size() << std::endl;
+//			std::cout << "Number of edges: " << graph->getEdges()->size() << std::endl;
 			minCut = kragersMinCut(graph);
-			std::cout << "Mincut: " << minCut << std::endl;
+//			std::cout << "Mincut: " << minCut << std::endl;
+            ASSERT_EQ(17, minCut);
 		}
 	}
 
@@ -121,13 +122,35 @@ namespace {
 		graph->addEdge(4, 5, 9);
 		graph->addEdge(5, 6, 10);
 
+        std::unordered_map<int, int> expectedShortestPaths;
+        expectedShortestPaths[1] = 0;
+        expectedShortestPaths[2] = 2;
+        expectedShortestPaths[3] = 5;
+        expectedShortestPaths[4] = 1;
+        expectedShortestPaths[5] = 6;
+        expectedShortestPaths[6] = 10;
+
 		std::vector<DijkstraNode<int> > * shortestPaths = graph->findShortestPaths(graph->getNodeForVertex(1));
 		for(std::vector<DijkstraNode<int> >::iterator it = shortestPaths->begin(); it != shortestPaths->end(); ++it)
 		{
 			DijkstraNode<int> dNode = *it;
-			std::cout << "Shortest path to node " << dNode.getNode()->getValue() << " is " << dNode.getScore() << std::endl;
+            ASSERT_EQ(expectedShortestPaths[dNode.getNode()->getValue()], dNode.getScore());
+//			std::cout << "Shortest path to node " << dNode.getNode()->getValue() << " is " << dNode.getScore() << std::endl;
 		}
 	}
+    
+    TEST(GraphTests, ConnectedComponentsTest)
+    {
+        Graph<int> * graph = new Graph<int>(false);
+		graph->addEdge(1, 2);
+		graph->addEdge(1, 3);
+		graph->addEdge(2, 4);
+		graph->addEdge(3, 4);
+        graph->addVertex(5);
+
+        std::set<std::set<int> * > * comps = graph->getConnectedComponents();
+        EXPECT_EQ(2, comps->size());
+    }
 
 	TEST(GraphTests, WordChainTest)
 	{
@@ -142,6 +165,21 @@ namespace {
 
 		static const std::string str_arr1[] = {"something", "machine", "elephant", "television", "rain" };
 		std::vector<std::string> str_list1(str_arr1, str_arr1 + sizeof(str_arr1)/sizeof(str_arr1[0]));
+
+        std::vector<std::string> results = findWordChain2(str_list);
+        EXPECT_EQ(result_list, results);
+
+        results = findWordChain2(str_list1);
+        EXPECT_EQ(0, results.size());
+
+        static const std::string str_arr2[] = {"rainbow", "flipkart", "tremor", "magnet", "telecom" };
+        std::vector<std::string> str_list2(str_arr2, str_arr2 + sizeof(str_arr2)/sizeof(str_arr2[0]));
+
+        static const std::string result_arr1[] = {"flipkart", "telecom", "magnet", "tremor", "rainbow"};
+        std::vector<std::string> result_list1(result_arr1, result_arr1 + sizeof(result_arr1)/sizeof(result_arr1[0]));
+
+        results = findWordChain2(str_list2);
+        EXPECT_EQ(result_list1, results);
 	}
 }
 

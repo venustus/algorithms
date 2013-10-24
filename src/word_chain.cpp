@@ -72,6 +72,29 @@ std::vector<std::string> findWordChain(std::vector<std::string>& input)
 	return topoOrder;
 }
 
+/**
+ * Problem:
+ * Given a list of dictionary words, find out if
+ * words can be arranged in such a way that they form a chain
+ * with the first and last letters of individual words.
+ * If it can be arranged, return a sequence of such words.
+ * Otherwise, return empty vector.
+ *
+ * Ex: {"rainbow", "flipkart", "armour", "magenta", "telecom" } - Yes
+ * Ex: something television machine rain elephant - No
+ *
+ * Algorithm:
+ * 1) Construct a character graph from the given words node in the graph
+ *    is either the begin or end of a string in the input and edge labels
+ *    are the strings that begin and end with the respective nodes.
+ * 2) Find the eulerian path in the graph.
+ * 3) Traverse the eulerien path and compile all the edge labels in the
+ *    path into a results vector.
+ * 4) Return the results vector.
+ *
+ * Time complexity: O(m + n)
+ * Space complexity: O(n)
+ */
 std::vector<std::string> findWordChain2(std::vector<std::string>& input)
 {
     std::vector<std::string> results;

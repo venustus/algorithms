@@ -31,6 +31,7 @@ template<class T>
 class BinaryHeap
 {
 	std::vector<T> * array;
+    std::unordered_map<T, int> * nodeIndexes;
 	std::function<bool(T, T)> compareObj;
 	bool maxHeap;
 	void heapify(int index);
@@ -80,6 +81,7 @@ BinaryHeap<T>::BinaryHeap(std::vector<T> * arr, bool isMaxHeap)
 		compareObj = std::less<T>();
 	}
 	array = arr;
+    nodeIndexes = new std::unordered_map<T, int>;
 	if(array->size() > 0)
 	{
 		for(int i = std::floor(arr->size()/2) - 1; i >= 0; i--)
@@ -87,6 +89,10 @@ BinaryHeap<T>::BinaryHeap(std::vector<T> * arr, bool isMaxHeap)
 			heapify(i);
 		}
 	}
+    for(typename std::vector<T>::const_iterator it = array->begin(); it != array->end(); ++it)
+    {
+        (*nodeIndexes)[*it] = it - array->begin();
+    }
 	maxHeap = isMaxHeap;
 }
 
@@ -136,8 +142,11 @@ void BinaryHeap<T>::heapify(int index)
 		if(largest != array->at(temp))
 		{
 			T tmp = largest;
+            (*nodeIndexes)[array->at(temp)] = largestIndex;
 			array->at(largestIndex) = array->at(temp);
 			array->at(temp) = tmp;
+            (*nodeIndexes)[largest] = temp;
+
 			temp = largestIndex;
 		}
 		else
@@ -207,7 +216,10 @@ void BinaryHeap<T>::insert(T val)
 		{
 			T tmp = array->at(currentIndex);
 			array->at(currentIndex) = array->at(parentIndex);
+            (*nodeIndexes)[array->at(parentIndex)] = currentIndex;
 			array->at(parentIndex) = tmp;
+            (*nodeIndexes)[tmp] = parentIndex;
+
 			currentIndex = parentIndex;
 			parentIndex = getParentIndex(currentIndex);
 		}
@@ -243,23 +255,27 @@ T BinaryHeap<T>::findTop()
  * Searches the heap for a given key and
  * returns the array index if found or -1
  * if not found.
- * This essentially does a linear search on
- * the underlying array.
+ * We keep a map of keys to indexes. Hence
+ * this operation just retrieves the index from the map
+ * and returns.
  *
- * Time complexity: O(n)
+ * Time complexity: O(1) - subject to how well the hash function
+ *                         is designed on the key
  * Space complexity: O(1)
  */
 template<class T>
 int BinaryHeap<T>::find(T key)
 {
-	for(typename std::vector<T>::iterator it = array->begin(); it != array->end(); ++it)
-	{
-		if(*it == key)
-		{
-			return it - array->begin();
-		}
-	}
-	return -1;
+    int index = -1;
+    try
+    {
+        index = nodeIndexes->at(key);
+    }
+    catch(const std::out_of_range &ex)
+    {
+
+    }
+    return index;
 }
 
 /**
@@ -284,8 +300,10 @@ void BinaryHeap<T>::removeTop()
 		return;
 	}
 	T tmp = array->at(0);
+    (*nodeIndexes)[array->at(array->size() - 1)] = 0;
 	array->at(0) = array->at(array->size() - 1);
 	array->at(array->size() - 1) = tmp;
+    (*nodeIndexes)[tmp] = array->size() - 1;
 	array->pop_back();
 	heapify(0);
 }
@@ -294,13 +312,17 @@ void BinaryHeap<T>::removeTop()
  * Searches the heap for a given key and
  * enhances the key to a new value 'newKey'.
  *
- * Time complexity: O(n)
+ * Time complexity: O(log n)
  * Space complexity: O(1)
  */
 template<class T>
 void BinaryHeap<T>::findAndUpdateKey(T key, T newKey)
 {
-	int index = find(key);
+	int index = find(key);  // constant time operation
+    if(index == -1)
+    {
+        return;
+    }
 	if(maxHeap && newKey > array->at(index))
 	{
 		enhanceKey(index, newKey);
@@ -340,8 +362,10 @@ void BinaryHeap<T>::enhanceKey(int index, T dest)
 		if(compareObj(array->at(currentIndex), array->at(parentIndex)))
 		{
 			T tmp = array->at(currentIndex);
+            (*nodeIndexes)[array->at(parentIndex)] = currentIndex;
 			array->at(currentIndex) = array->at(parentIndex);
 			array->at(parentIndex) = tmp;
+            (*nodeIndexes)[tmp] = parentIndex;
 			currentIndex = parentIndex;
 			parentIndex = getParentIndex(currentIndex);
 		}

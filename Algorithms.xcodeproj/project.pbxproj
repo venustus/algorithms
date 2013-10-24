@@ -199,6 +199,12 @@
 		825635991809290600C1F07A /* sorting_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sorting_tests.cpp; sourceTree = "<group>"; };
 		8256359A1809290600C1F07A /* stack_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stack_tests.cpp; sourceTree = "<group>"; };
 		8256359B1809290600C1F07A /* string_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string_tests.cpp; sourceTree = "<group>"; };
+		CF1EB329C558B24D41744CC0 /* dijkstraData.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dijkstraData.txt; sourceTree = "<group>"; };
+		CF1EB4474066CCF3A09B89D5 /* SCC.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SCC.txt; sourceTree = "<group>"; };
+		CF1EB50B8AAFABF54C421168 /* mediumDG.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mediumDG.txt; sourceTree = "<group>"; };
+		CF1EBBF7C55319724B559A0E /* SCC_Test1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SCC_Test1.txt; sourceTree = "<group>"; };
+		CF1EBD4B6327A85BB494FB17 /* SCC_Test2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SCC_Test2.txt; sourceTree = "<group>"; };
+		CF1EBE8426BE5DAAFE96A5FE /* SCC_Test3.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SCC_Test3.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -334,6 +340,12 @@
 				82563561180928C300C1F07A /* wildcard_expansion.h */,
 				82563562180928C300C1F07A /* word_chain.cpp */,
 				82563563180928C300C1F07A /* word_chain.h */,
+				CF1EB4474066CCF3A09B89D5 /* SCC.txt */,
+				CF1EBBF7C55319724B559A0E /* SCC_Test1.txt */,
+				CF1EBD4B6327A85BB494FB17 /* SCC_Test2.txt */,
+				CF1EB50B8AAFABF54C421168 /* mediumDG.txt */,
+				CF1EBE8426BE5DAAFE96A5FE /* SCC_Test3.txt */,
+				CF1EB329C558B24D41744CC0 /* dijkstraData.txt */,
 			);
 			name = src;
 			path = ../../cpluspluspractice/src;
@@ -520,6 +532,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;

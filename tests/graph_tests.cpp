@@ -9,12 +9,33 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
+#include <unordered_map>
+#include <functional>
+#include <regex>
 #include "gtest/gtest.h"
 #include "graph.h"
-#include "binaryheap.h"
 #include "mincut.h"
 #include "word_chain.h"
+
+namespace std {
+    template <>
+    struct hash<DijkstraNode<int> >
+    {
+    public:
+        std::size_t operator()(const DijkstraNode<int>& k) const
+        {
+            using std::size_t;
+            using std::hash;
+
+            // Compute individual hash values for first,
+            // second and third and combine them using XOR
+            // and bit shifting:
+
+            return hash<int>()(k.getNode()->getValue());
+        }
+    };
+
+}
 
 namespace {
 	class GraphTests : public ::testing::Test {
@@ -102,13 +123,19 @@ namespace {
 				}
 			}
 			graphInput.close();
-//			std::cout << "Number of vertices: " << graph->getVertices()->size() << std::endl;
-//			std::cout << "Number of edges: " << graph->getEdges()->size() << std::endl;
 			minCut = kragersMinCut(graph);
-//			std::cout << "Mincut: " << minCut << std::endl;
             ASSERT_EQ(17, minCut);
 		}
 	}
+
+    std::vector<std::string> split(const std::string& input, const std::regex& re)
+    {
+        std::vector<std::string> results;
+        std::copy(std::sregex_token_iterator(input.begin(), input.end(), re, -1),
+                  std::sregex_token_iterator(),
+                  std::back_inserter<std::vector<std::string> >(results));
+        return results;
+    }
 
 	TEST(GraphTests, ShortestPathsTest) {
 		Graph<int> * graph = new Graph<int>(true);
@@ -135,9 +162,61 @@ namespace {
 		{
 			DijkstraNode<int> dNode = *it;
             ASSERT_EQ(expectedShortestPaths[dNode.getNode()->getValue()], dNode.getScore());
-//			std::cout << "Shortest path to node " << dNode.getNode()->getValue() << " is " << dNode.getScore() << std::endl;
 		}
+
+        delete graph;
+        graph = new Graph<int>(false);
+        std::ifstream edgeArray("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/dijkstraData.txt");
+        if(edgeArray.is_open())
+        {
+            while(edgeArray.good())
+            {
+                std::string line;
+                getline(edgeArray, line);
+                std::regex ws_re("\\s+");
+                std::vector<std::string> parts = split(line, ws_re);
+                int v = atoi(parts[0].c_str());
+                for(std::vector<std::string>::iterator it = parts.begin() + 1; it != parts.end(); ++it)
+                {
+                    std::string part = *it;
+                    std::regex comma(",");
+                    std::vector<std::string> subparts = split(part, comma);
+                    graph->addEdge(v, atoi(subparts[0].c_str()), atoi(subparts[1].c_str()));
+                }
+            }
+            edgeArray.close();
+        }
+        shortestPaths = graph->findShortestPaths(graph->getNodeForVertex(1));
+        std::unordered_map<int, int> expectedResults;
+        expectedResults[7] = 2599;
+        expectedResults[37] = 2610;
+        expectedResults[59] = 2947;
+        expectedResults[82] = 2052;
+        expectedResults[99] = 2367;
+        expectedResults[115] = 2399;
+        expectedResults[133] = 2029;
+        expectedResults[165] = 2442;
+        expectedResults[188] = 2505;
+        expectedResults[197] = 3068;
+
+        for(std::vector<DijkstraNode<int> >::iterator it = shortestPaths->begin(); it != shortestPaths->end(); ++it)
+        {
+            DijkstraNode<int> dNode = *it;
+            try {
+                int spd = expectedResults.at(dNode.getNode()->getValue());
+                ASSERT_EQ(expectedResults[dNode.getNode()->getValue()], dNode.getScore());
+            }
+            catch(const std::out_of_range &oor)
+            {
+
+            }
+        }
 	}
+
+    struct SetSizeLess {
+        bool operator()( std::set<int> const *lhs, std::set<int> const *rhs ) const
+        { return lhs->size() > rhs->size(); }
+    };
     
     TEST(GraphTests, ConnectedComponentsTest)
     {
@@ -148,8 +227,79 @@ namespace {
 		graph->addEdge(3, 4);
         graph->addVertex(5);
 
-        std::set<std::set<int> * > * comps = graph->getConnectedComponents();
+        std::vector<std::set<int> * > * comps = graph->getConnectedComponents(-1);
         EXPECT_EQ(2, comps->size());
+        std::sort(comps->begin(), comps->end(), SetSizeLess());
+        EXPECT_EQ(4, comps->at(0)->size());
+        EXPECT_EQ(1, comps->at(1)->size());
+
+        graph = new Graph<int>(true);
+        graph->addEdge(1, 2);
+        graph->addEdge(2, 3);
+        graph->addEdge(3, 1);
+
+        graph->addEdge(5, 7);
+        graph->addEdge(7, 6);
+        graph->addEdge(6, 5);
+
+        graph->addEdge(8, 10);
+        graph->addEdge(8, 11);
+        graph->addEdge(10, 11);
+        graph->addEdge(9, 8);
+        graph->addEdge(11, 9);
+
+        graph->addEdge(2, 4);
+        graph->addEdge(4, 5);
+        graph->addEdge(4, 6);
+
+        graph->addEdge(3, 8);
+        graph->addEdge(3, 9);
+
+        graph->addEdge(8, 6);
+        graph->addEdge(10, 7);
+
+        comps = graph->getConnectedComponents(-1);
+        std::sort(comps->begin(), comps->end(), SetSizeLess());
+        EXPECT_EQ(4, comps->size());
+        EXPECT_EQ(4, comps->at(0)->size());
+        EXPECT_EQ(3, comps->at(1)->size());
+        EXPECT_EQ(3, comps->at(2)->size());
+        EXPECT_EQ(1, comps->at(3)->size());
+    }
+
+    TEST(GraphTests, StronglyConnectedComponentsTest)
+    {
+        Graph<int> * bigGraph = new Graph<int>(true);
+        std::ifstream edgeArray("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/SCC.txt");
+        if(edgeArray.is_open())
+        {
+            while(edgeArray.good())
+            {
+                std::string line;
+                getline(edgeArray, line);
+                std::stringstream ss(line);
+                std::string tail, head;
+                std::getline(ss, tail, ' ');
+                std::getline(ss, head, ' ');
+                if(head.empty())
+                {
+                    bigGraph->addVertex(atoi(tail.c_str()));
+                }
+                else
+                {
+                    bigGraph->addEdge(atoi(tail.c_str()), atoi(head.c_str()));
+                }
+            }
+            edgeArray.close();
+        }
+        std::vector<std::set<int> * > * comps = bigGraph->getConnectedComponents(5);
+        std::sort(comps->begin(), comps->end(), SetSizeLess());
+        EXPECT_EQ(371762, comps->size());
+        EXPECT_EQ(434821, comps->at(0)->size());
+        EXPECT_EQ(968, comps->at(1)->size());
+        EXPECT_EQ(459, comps->at(2)->size());
+        EXPECT_EQ(313, comps->at(3)->size());
+        EXPECT_EQ(211, comps->at(4)->size());
     }
 
 	TEST(GraphTests, WordChainTest)

@@ -272,6 +272,12 @@ void GraphNode<T>::setVisited(NODE_COLOR color)
 }
 
 template<class T>
+std::set<GraphEdge<T> * > * GraphNode<T>::getIncidentEdges()
+{
+    return incidentEdges;
+}
+
+template<class T>
 void GraphNode<T>::resetVisited()
 {
 	visited = WHITE;
@@ -285,11 +291,18 @@ class Graph
 	std::vector<GraphEdge<T> * > * edges;
 	bool directed;
 
+    void dfs_reverse(std::vector<T> * dfsOrder, std::vector<GraphNode<T> * > * topologicalOrder);
 	void dfs_navigate(GraphNode<T> * node, std::vector<T> * dfsOrder,
 					  std::vector<T> * topologicalOrder, int &topoLabel);
-	std::set<std::set<T> * > * getConnectedComponentsUndirected();
+    void dfs_navigate_reverse(GraphNode<T> * node, std::vector<T> * dfsOrder,
+                              std::vector<GraphNode<T> * > * topologicalOrder, int &topoLabel);
+    void dfs_navigate_reverse_iter(GraphNode<T> * node, std::vector<T> * dfsOrder,
+                                   std::vector<GraphNode<T> * > * topologicalOrder, int &topoLabel);
+	std::vector<std::set<T> * > * getConnectedComponentsUndirected();
+    std::vector<std::set<T> * > * getStronglyConnectedComponents(int numComps);
     std::vector<GraphNode<T> * > * getEulerianPathUndirected();
     std::vector<GraphNode<T> * > * getEulerianPathDirected();
+    void bfs(GraphNode<T> * start, std::vector<T> * bfsOrder);
 public:
 	Graph(bool directed);
 	Graph(Graph<T> * copy);
@@ -307,7 +320,7 @@ public:
     void bfs(T start, std::vector<T> * bfsOrder);
 	void deleteVertex(GraphNode<T> * vertex);
 	bool pathExists(T a, T b);
-	std::set<std::set<T> * > * getConnectedComponents();
+	std::vector<std::set<T> * > * getConnectedComponents(int numComps);
     std::vector<GraphNode<T> * > * getEulerianPath();
 	GraphEdge<T> * getIthEdge(int i);
 	void contractEdge(int edgeIndex);
@@ -576,6 +589,20 @@ void Graph<T>::dfs(std::vector<T> * dfsOrder, std::vector<T> * topologicalOrder)
 		}
 	}
 }
+
+template<class T>
+void Graph<T>::dfs_reverse(std::vector<T> * dfsOrder, std::vector<GraphNode<T> * > * topologicalOrder)
+{
+    int topoLabel = vertices->size() - 1;
+    for(typename std::unordered_map<T, GraphNode<T> * >::iterator it = vertices->begin(); it != vertices->end(); ++it)
+    {
+        GraphNode<T> * node = it->second;
+        if(node->getVisited() == WHITE)
+        {
+            dfs_navigate_reverse_iter(node, dfsOrder, topologicalOrder, topoLabel);
+        }
+    }
+}
         
 template<class T>
 void Graph<T>::dfs(T start, std::vector<T> * dfsOrder, std::vector<T> * topologicalOrder)
@@ -583,6 +610,70 @@ void Graph<T>::dfs(T start, std::vector<T> * dfsOrder, std::vector<T> * topologi
     int topoLabel = vertices->size() - 1;
     GraphNode<T> * node = vertices->at(start);
     dfs_navigate(node, dfsOrder, topologicalOrder, topoLabel);
+}
+
+template<class T>
+void Graph<T>::dfs_navigate_reverse_iter(GraphNode<T> * node, std::vector<T> * dfsOrder,
+                                         std::vector<GraphNode<T> * > * topologicalOrder, int &topoLabel)
+{
+    std::stack<GraphNode<T> * > * dfsStack = new std::stack<GraphNode<T> * >;
+    dfsStack->push(node);
+    while(!dfsStack->empty())
+    {
+        GraphNode<T> * currNode = dfsStack->top();
+        dfsStack->pop();
+        dfsOrder->push_back(currNode->getValue());
+        if(currNode->getVisited() == WHITE)
+        {
+            currNode->setVisited(GRAY);
+            dfsStack->push(currNode);
+        }
+        else if(currNode->getVisited() == GRAY)
+        {
+            currNode->setVisited(BLACK);
+            topologicalOrder->at(topoLabel--) = currNode;
+            continue;
+        }
+        std::set<GraphEdge<T> * > * incidentEdges = currNode->getIncidentEdges();
+        if(incidentEdges->size() > 0)
+        {
+            for(typename std::set<GraphEdge<T> * >::iterator it = incidentEdges->begin();
+                it != incidentEdges->end(); ++it)
+            {
+                GraphEdge<T> * edge = *it;
+                GraphNode<T> * otherVertex = edge->getFirst();
+                if(otherVertex->getVisited() == WHITE)
+                {
+                    dfsStack->push(otherVertex);
+                }
+            }
+        }
+    }
+    delete dfsStack;
+}
+
+template<class T>
+void Graph<T>::dfs_navigate_reverse(GraphNode<T> * node, std::vector<T> * dfsOrder,
+                                    std::vector<GraphNode<T> * > * topologicalOrder, int &topoLabel)
+{
+    node->setVisited(GRAY);
+    dfsOrder->push_back(node->getValue());
+    std::set<GraphEdge<T> * > * incidentEdges = node->getIncidentEdges();
+    if(incidentEdges->size() > 0)
+    {
+        for(typename std::set<GraphEdge<T> * >::iterator it = incidentEdges->begin();
+            it != incidentEdges->end(); ++it)
+        {
+            GraphEdge<T> * edge = *it;
+            GraphNode<T> * otherVertex = edge->getFirst();
+            if(otherVertex->getVisited() == WHITE)
+            {
+                dfs_navigate_reverse(otherVertex, dfsOrder, topologicalOrder, topoLabel);
+            }
+        }
+    }
+    node->setVisited(BLACK);
+    topologicalOrder->at(topoLabel--) = node;
 }
 
 template<class T>
@@ -629,14 +720,20 @@ bool Graph<T>::pathExists(T a, T b)
 		return true;
 	}
 }
-        
+
 template<class T>
 void Graph<T>::bfs(T start, std::vector<T> * bfsOrder)
 {
     GraphNode<T> * node = vertices->at(start);
+    bfs(node, bfsOrder);
+}
+        
+template<class T>
+void Graph<T>::bfs(GraphNode<T> * start, std::vector<T> * bfsOrder)
+{
     std::queue<GraphNode<T> * > * bfsQueue = new std::queue<GraphNode<T> * >;
-    bfsQueue->push(node);
-    node->setVisited(GRAY);
+    bfsQueue->push(start);
+    start->setVisited(GRAY);
     while(!bfsQueue->empty())
     {
         GraphNode<T> * currNode = bfsQueue->front();
@@ -715,7 +812,7 @@ void Graph<T>::bfs(std::vector<T> * bfsOrder)
  * strongly connected components.
  */
 template<class T>
-std::set<std::set<T> * > * Graph<T>::getConnectedComponents()
+std::vector<std::set<T> * > * Graph<T>::getConnectedComponents(int numComps)
 {
 	if(!directed)
 	{
@@ -723,15 +820,33 @@ std::set<std::set<T> * > * Graph<T>::getConnectedComponents()
 	}
 	else
 	{
-		//TODO
-		return NULL;
+        return getStronglyConnectedComponents(numComps);
 	}
 }
 
+/**
+ * Problem:
+ * Get the set of connected components in an undirected graph.
+ * A connected component of an undirected graph is a subset of vertices
+ * with the property that start from any vertex in this subset
+ * we can reach all the other vertices in the same subset.
+ *
+ * Idea: DFS discovers everything findable and nothing more.
+ *       Do DFS repeatedly to find connected components.
+ * Algorithm:
+ * 1) For each vertex in the graph, run DFS starting
+ *    from that vertex if that vertex is not visited yet.
+ * 2) Group all vertices visited in a single invocation of DFS
+ *    into a connected component.
+ * 3) Return all groups of vertices as a set.
+ *
+ * Time complexity: O(n)
+ * Space complexity: O(1)
+ */
 template<class T>
-std::set<std::set<T> * > * Graph<T>::getConnectedComponentsUndirected()
+std::vector<std::set<T> * > * Graph<T>::getConnectedComponentsUndirected()
 {
-	std::set<std::set<T> * > * components = new std::set<std::set<T> * >;
+	std::vector<std::set<T> * > * components = new std::vector<std::set<T> * >;
 	std::vector<T> topologicalOrder;
 	int topoLabel = vertices->size() - 1;
     topologicalOrder.resize(vertices->size());
@@ -744,10 +859,55 @@ std::set<std::set<T> * > * Graph<T>::getConnectedComponentsUndirected()
 			std::vector<T> dfsOrder;
 			dfs_navigate(node, &dfsOrder, &topologicalOrder, topoLabel);
 			currComponent->insert(dfsOrder.begin(), dfsOrder.end());
-			components->insert(currComponent);
+			components->push_back(currComponent);
 		}
 	}
 	return components;
+}
+
+/**
+ * Problem:
+ * Get the set of strongly connected components in a directed graph.
+ * A strongly connected component of a directed graph is a subset of vertices
+ * with the property that start from any vertex in this subset
+ * we can reach all the other vertices in the same subset.
+ *
+ * Idea: We use Kosaraju's algorithm to find strongly connected components.
+ * Algorithm:
+ * 1) Run a specialized version of dfs_navigate called 'dfs_navigate_reverse'
+ *    which navigates edges in reverse (that is it picks incident edges instead of
+ *    neighbours. Also compute the finishing times while doing this DFS.
+ * 2) Now run a second DFS (this time normally) while picking the vertices
+ *    in the decreasing order of finishing times.
+ * 3) Every iteration in the second DFS loop outputs a strongly
+ *    connected component.
+ */
+template<class T>
+std::vector<std::set<T> * > * Graph<T>::getStronglyConnectedComponents(int numComps)
+{
+    std::vector<std::set<T> * > * components = new std::vector<std::set<T> * >;
+    std::vector<GraphNode<T> * > topologicalOrder;
+    int topoLabel = vertices->size() - 1;
+    topologicalOrder.resize(vertices->size());
+
+    std::vector<T> dfsOrder;
+    dfs_reverse(&dfsOrder, &topologicalOrder);
+    reset();
+    for(typename std::vector<GraphNode<T> * >::iterator it = topologicalOrder.begin(); it != topologicalOrder.end(); ++it)
+    {
+        GraphNode<T> * node = *it;
+        if(node->getVisited() == WHITE)
+        {
+            std::set<T> * currComponent = new std::set<T>;
+            std::vector<T> bfsOrder;
+            bfs(node, &bfsOrder);
+            currComponent->insert(bfsOrder.begin(), bfsOrder.end());
+            components->push_back(currComponent);
+            //numComps--;
+            //if(numComps == 0) break;
+        }
+    }
+    return components;
 }
 
 template<class T>
@@ -770,6 +930,42 @@ std::vector<GraphNode<T> * > * Graph<T>::getEulerianPathUndirected()
     return NULL;
 }
 
+/**
+ * Problem:
+ * Find a eulerian path in a directed graph.
+ * A eulerian path is a series of vertices which can be traversed
+ * by following the respective edges where each edge is traversed
+ * only once and all edges are traversed.
+ *
+ * Algorithm:
+ * 1) Loop through all the vertices and find the vertices
+ *    having in-degree not equal to their out-degree.
+ * 2) If there are exactly 2 vertices of 0 vertices having
+ *    in-degree not equal to the out-degree, then the graph
+ *    has a eulerian path. Otherwise no eulerian path is possible
+ *    and hence return NULL.
+ * 3) If there are two vertices whose in-degree is not equal to
+ *    the out-degree, then one of them will have in-degree less
+ *    than out-degree and that'll be the start vertex.
+ *    The other vertex will have in-degree greater than out-degree
+ *    and that'll be the end vertex.
+ * 4) If there are 0 vertices whose in-degree is not equal to the
+ *    out-degree then start at any arbitrary vertex.
+ * 5) If there is at least one out-going edge from the current
+ *    vertex, then push the current vertex onto the stack,
+ *    remove the edge from the graph and then set current vertex
+ *    as the head of the out-going edge.
+ * 6) If there are no out-going edges from the current vertex,
+ *    add the current vertex to the eulerian path and pop it
+ *   from the stack.
+ * 7) When the stack is empty and the current vertex has no
+ *    more neighbours the loop ends. The eulerian path vector
+ *    has the vertices in reverse order. Reverse the vector
+ *    and return.
+ *
+ * Time complexity: O(m + n)
+ * Space complexity: O(n)
+ */
 template<class T>
 std::vector<GraphNode<T> * > * Graph<T>::getEulerianPathDirected()
 {
@@ -935,6 +1131,47 @@ void DijkstraNode<T>::setScore(long newScore)
 	dijkstraScore = newScore;
 }
 
+/**
+ * Given this graph, find shortest paths to all other vertices from a given
+ * source vertex. (Single source shortest paths problem).
+ *
+ * Approach: Dijkstra's shortest paths algorithm (Greedy)
+ *
+ * Data structure:
+ * We maintain a heap of Dijkstra nodes where each Dijkstra node
+ * contains a pointer to the original graph node and has a score called
+ * Dijkstra score.
+ *
+ * At any given point in the algorithm, the Dijkstra score stands for
+ * the shortest path from the source vertex to that node where
+ * all the vertices in the shortest path are from the currently processed
+ * set. Dijkstra algorithm, at any arbitrary iteration, divides the set of
+ * vertices into processed set and unprocessed set. The processed set of
+ * vertices have their shortest paths already discovered, while shortest paths for unprocessed
+ * set of vertices are not yet finalized.
+ *
+ * Algorithm:
+ * 1) Build a binary min-heap of all Dijkstra nodes in the graph. Initially
+ *    the Dijkstra score of all nodes is +(infinity) except the source vertex
+ *    for which the Dijkstra score will be 0.
+ * 2) While the heap is non-empty, pop out the minimum element in the heap
+ *    and add the popped out node to the result where its Dijkstra score
+ *    equals the shortest path from source to that vertex.
+ * 3) When a vertex is popped out from unprocessed node set and consumed into
+ *    processed element set, we need to update teh Dijkstra score for some
+ *    vertices in the graph which share an edge with the just consumed element.
+ *    The new Dijkstra score will be the Dijkstra score of the consumed element
+ *    + the edge weight of the edge from the consumed element to the node in question.
+ *    If the new Dijkstra score is less than the nodes' existing Dijkstra score,
+ *    update the Dijkstra score of that node in the heap.
+ * 4) Algorithm halts when the heap is empty. At that point, all the shortest
+ *    paths have been discovered.
+ *
+ * Time complexity: O(m log n)
+ *      There are O(n + m) heap operations and assuming n = O(m), so there are
+ *      O(m) heap operations each taking O(log n). So time complexity is O(m log n)
+ * Space complexity: O(n)
+ */
 template<class T>
 std::vector<DijkstraNode<T> > * Graph<T>::findShortestPaths(GraphNode<T> * source)
 {

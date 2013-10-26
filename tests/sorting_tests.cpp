@@ -48,7 +48,7 @@ namespace {
 		ASSERT_TRUE(sortedListRef == list);
 
 		std::vector<int> * biglist = new std::vector<int>;
-		std::ifstream integerArray("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/QuickSort.txt");
+		std::ifstream integerArray("inputs/QuickSort.txt");
 		if(integerArray.is_open())
 		{
 			while(integerArray.good())
@@ -102,7 +102,7 @@ namespace {
 		EXPECT_EQ(numInversions, 33);
 
 		std::vector<long long int> * biglist = new std::vector<long long int>;
-		std::ifstream integerArray("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/IntegerArray.txt");
+		std::ifstream integerArray("inputs/IntegerArray.txt");
 		if(integerArray.is_open())
 		{
 			while(integerArray.good())

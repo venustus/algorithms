@@ -102,7 +102,7 @@ namespace {
 
 		delete graph;
 		graph = new Graph<int>(false);
-		std::ifstream graphInput("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/kargerMinCut.txt");
+		std::ifstream graphInput("inputs/kargerMinCut.txt");
 		if(graphInput.is_open())
 		{
 			while(graphInput.good())
@@ -166,7 +166,7 @@ namespace {
 
         delete graph;
         graph = new Graph<int>(false);
-        std::ifstream edgeArray("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/dijkstraData.txt");
+        std::ifstream edgeArray("inputs/dijkstraData.txt");
         if(edgeArray.is_open())
         {
             while(edgeArray.good())
@@ -270,7 +270,7 @@ namespace {
     TEST(GraphTests, StronglyConnectedComponentsTest)
     {
         Graph<int> * bigGraph = new Graph<int>(true);
-        std::ifstream edgeArray("/Users/venkat/Documents/Projects/cplusplus/Algorithms/cpluspluspractice/src/SCC.txt");
+        std::ifstream edgeArray("inputs/SCC.txt");
         if(edgeArray.is_open())
         {
             while(edgeArray.good())

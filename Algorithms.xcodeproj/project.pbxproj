@@ -95,6 +95,7 @@
 		CF1EB098AA8D725B123F289E /* string_normalize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string_normalize.h; sourceTree = "<group>"; };
 		CF1EB0F15E359D710E7A0B3B /* SCC_Test1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SCC_Test1.txt; sourceTree = "<group>"; };
 		CF1EB16379F3E4D677BB46E4 /* matrix_zero.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = matrix_zero.cpp; sourceTree = "<group>"; };
+		CF1EB164742A75A37776A78F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = file.md; path = README.md; sourceTree = "<group>"; };
 		CF1EB16C0AC5652B04C4C834 /* topkelements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = topkelements.h; sourceTree = "<group>"; };
 		CF1EB1B139A814ACEEC159F7 /* closestpair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = closestpair.h; sourceTree = "<group>"; };
 		CF1EB1BB2266794C6E42CAAF /* graph_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph_tests.cpp; sourceTree = "<group>"; };
@@ -221,6 +222,7 @@
 				CF1EB3797BF5E3D9A9AAF703 /* contrib */,
 				CF1EB7919C9F620C423031F9 /* tests */,
 				CF1EB6E5C6E283CD159A4D24 /* inputs */,
+				CF1EB164742A75A37776A78F /* README.md */,
 			);
 			sourceTree = "<group>";
 		};

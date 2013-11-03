@@ -168,7 +168,17 @@ public:
 	 */
 	Node<T> * cycleStart();
 
+    /**
+     * Reverses the linked list.
+     */
+    void reverse();
+
 	int size();
+
+    /**
+     * Converts this linked list to a plain vector.
+     */
+    std::vector<T> * convertToPlainList();
 };
 
 template<class T>
@@ -579,6 +589,35 @@ Node<T> * LinkedList<T>::cycleStart()
 		fastRunner = fastRunner->getNext();
 	}
 	return fastRunner;
+}
+
+template<class T>
+void LinkedList<T>::reverse()
+{
+    Node<T> * curr = NULL;
+    Node<T> * next = head;
+    tail = head;
+    while(next)
+    {
+        Node<T> * temp = next->getNext();
+        next->setNext(curr);
+        curr = next;
+        next = temp;
+    }
+    head = curr;
+}
+
+template<class T>
+std::vector<T> * LinkedList<T>::convertToPlainList()
+{
+    std::vector<T> * list = new std::vector<T>;
+    Node<T> * temp = head;
+    while(temp)
+    {
+        list->push_back(temp->getValue());
+        temp = temp->getNext();
+    }
+    return list;
 }
 
 

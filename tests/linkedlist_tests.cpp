@@ -106,6 +106,19 @@ namespace {
 		  EXPECT_EQ(false, ll3->isPalindrome());
 	}
 
+    TEST(LinkedListTests, ReverseTest)
+    {
+        static const int arr[] = {16, 2, 77, 29, 24, 19, 3};
+        std::vector<int> mylist(arr, arr + sizeof(arr)/sizeof(arr[0]));
+        LinkedList<int> * ll = new LinkedList<int>(mylist, true);
+        // list is [16, 2, 77, 29, 24, 19, 3]
+
+        static const int exp_result_arr[] = {3, 19, 24, 29, 77, 2, 16};
+        std::vector<int> exp_result_list(exp_result_arr, exp_result_arr + sizeof(exp_result_arr)/sizeof(exp_result_arr[0]));
+        ll->reverse();
+        EXPECT_EQ(exp_result_list, *(ll->convertToPlainList()));
+    }
+
 	TEST(LinkedListTests, LLSumTests) {
 		 static const int arr1[] = {6, 3, 4};
 		 std::vector<int> mylist1(arr1, arr1 + sizeof(arr1)/sizeof(arr1[0]));

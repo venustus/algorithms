@@ -13,6 +13,7 @@
 #include "string_normalize.h"
 #include "anagram.h"
 #include "wildcard_expansion.h"
+#include "palindrome.h"
 
 namespace {
   class StringTests : public ::testing::Test {
@@ -96,6 +97,17 @@ namespace {
 	  std::string input4("else");
 	  value = areAnagrams(input3, input4);
 	  EXPECT_EQ(false, value);
+  }
+
+  TEST(StringTests, PalindromeTest)
+  {
+      std::string input1("ABB A");
+      std::string input2("ABAXBAB");
+
+      bool result = isPalindrome(input1);
+      EXPECT_EQ(true, result);
+      result = isPalindrome(input2);
+      EXPECT_EQ(false, result);
   }
 
   TEST(StringTests, WildcardTest)

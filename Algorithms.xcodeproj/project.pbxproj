@@ -26,7 +26,9 @@
 		CF1EB4C3E5B0231D8AFB9928 /* anagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBE63A460B1627CDC5440 /* anagram.cpp */; };
 		CF1EB52E9D78FA34B482C081 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB2C66331705B3E6A0E5E /* main.cpp */; };
 		CF1EB5364EBF8CA9DE45688A /* fixed_capacity_bool_vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBE9423C93CBFF7D718B7 /* fixed_capacity_bool_vector.cpp */; };
+		CF1EB572E92282FA4AC45461 /* top_coder_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB6AD35DB15447AC199BF /* top_coder_tests.cpp */; };
 		CF1EB59D0F84E29B715D7089 /* string_reverse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBF91FB1195A716A732ED /* string_reverse.cpp */; };
+		CF1EB5F89A222F58A0EB31C5 /* stamp_coloring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB6AEEBC912DBBD9D9F81 /* stamp_coloring.cpp */; };
 		CF1EB62CB96803426A0B894E /* ll_sum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB3E1E350D4E4ED4E8FBD /* ll_sum.cpp */; };
 		CF1EB650357AA2FF5BED88A8 /* min_coins_for_sum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB896C580AB4CBCC9B64D /* min_coins_for_sum.cpp */; };
 		CF1EB7469B57B55C1308B5F9 /* lss.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBC8358C3921CDD1B5B38 /* lss.cpp */; };
@@ -39,12 +41,14 @@
 		CF1EB96B8F48E06F1DEB4A3B /* lcs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBD7C88BE761EBB361A8D /* lcs.cpp */; };
 		CF1EB973AF8175D15FE5E984 /* biggest_interval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBC45ADD0590B8A7C15B8 /* biggest_interval.cpp */; };
 		CF1EB9B1C78514EAA8FD9650 /* stringcompress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB89DE59576B959800402 /* stringcompress.cpp */; };
+		CF1EBA3DD63803351652F3E8 /* palindrome.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB7260BC2F033EEEEB825 /* palindrome.cpp */; };
 		CF1EBB0E0F8C11526D6E28D8 /* selection_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBF75850B46F791BC06CE /* selection_tests.cpp */; };
 		CF1EBB7B967E397DB11A4165 /* lis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB49218E06E6DF56ADC8F /* lis.cpp */; };
 		CF1EBB8D4F6D08AE541D2377 /* sorting_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB93CF7FBF2EE349D3F33 /* sorting_tests.cpp */; };
 		CF1EBB9BC1A5FD8E0B06AFAF /* median.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBDA0B021DA2C004A90F7 /* median.cpp */; };
 		CF1EBC1E3A2DD48FA5FFD5FE /* string_permute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBFAD3555177536913ADC /* string_permute.cpp */; };
 		CF1EBC57C174724B6BC7325A /* lrucache_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB4DBE6618C7DE29549BB /* lrucache_test.cpp */; };
+		CF1EBC5891A89FBA69549F96 /* colorful_road.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB4F1AA847C088D6D1DAC /* colorful_road.cpp */; };
 		CF1EBD16D19D1B48120368C7 /* integer_knapsack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB23BB98ACD97EBCFDA7D /* integer_knapsack.cpp */; };
 		CF1EBD35AA3A9AF8049F4A82 /* graph_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB1BB2266794C6E42CAAF /* graph_tests.cpp */; };
 		CF1EBD9A5CEA3375B6F3FBF8 /* string_normalize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBBEB7F1D3D7DD421BE7B /* string_normalize.cpp */; };
@@ -122,15 +126,20 @@
 		CF1EB4AD53432AC6E052A4E7 /* job_scheduling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = job_scheduling.cpp; sourceTree = "<group>"; };
 		CF1EB4B1181BA19D84CF780B /* string_reverse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string_reverse.h; sourceTree = "<group>"; };
 		CF1EB4DBE6618C7DE29549BB /* lrucache_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lrucache_test.cpp; sourceTree = "<group>"; };
+		CF1EB4F1AA847C088D6D1DAC /* colorful_road.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = colorful_road.cpp; sourceTree = "<group>"; };
 		CF1EB4FBA0EB95A14148408A /* greedy_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = greedy_tests.cpp; sourceTree = "<group>"; };
 		CF1EB57F7A8D2564D2373F24 /* closestpair.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = closestpair.cpp; sourceTree = "<group>"; };
 		CF1EB5A42F5A85E917FEB749 /* mystack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mystack.h; sourceTree = "<group>"; };
 		CF1EB61A6CE06167B7E321CE /* subsetswithsum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = subsetswithsum.h; sourceTree = "<group>"; };
 		CF1EB63B5D35E55D468B30EC /* shuffle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shuffle.cpp; sourceTree = "<group>"; };
 		CF1EB657EAAAA35BF2668115 /* string_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string_tests.cpp; sourceTree = "<group>"; };
+		CF1EB6AD35DB15447AC199BF /* top_coder_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = top_coder_tests.cpp; sourceTree = "<group>"; };
+		CF1EB6AEEBC912DBBD9D9F81 /* stamp_coloring.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stamp_coloring.cpp; sourceTree = "<group>"; };
 		CF1EB6F1721CF1C33B74099F /* int_multiply.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = int_multiply.cpp; sourceTree = "<group>"; };
 		CF1EB706EAF03CDD9986166B /* lps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lps.h; sourceTree = "<group>"; };
+		CF1EB7260BC2F033EEEEB825 /* palindrome.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = palindrome.cpp; sourceTree = "<group>"; };
 		CF1EB74DB38FF93D7741DD95 /* ll_sum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ll_sum.h; sourceTree = "<group>"; };
+		CF1EB78FC236F79C24C282C7 /* palindrome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = palindrome.h; sourceTree = "<group>"; };
 		CF1EB7A307D2899DC393D460 /* fixed_capacity_bool_vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fixed_capacity_bool_vector.h; sourceTree = "<group>"; };
 		CF1EB7AEF75F13EDB2294D79 /* gtest-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "gtest-all.cc"; sourceTree = "<group>"; };
 		CF1EB7E01482CAF0302DEA06 /* lis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lis.h; sourceTree = "<group>"; };
@@ -187,6 +196,7 @@
 		CF1EBE9369A2EB548BA8289F /* sorting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sorting.h; sourceTree = "<group>"; };
 		CF1EBE9423C93CBFF7D718B7 /* fixed_capacity_bool_vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fixed_capacity_bool_vector.cpp; sourceTree = "<group>"; };
 		CF1EBEAEA143E358CD318DBD /* word_chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = word_chain.h; sourceTree = "<group>"; };
+		CF1EBEFCC89A925775D6C1CE /* top_coder_tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = top_coder_tests.h; sourceTree = "<group>"; };
 		CF1EBF001A7F6487E996B25A /* closestpair_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = closestpair_test.cpp; sourceTree = "<group>"; };
 		CF1EBF1E0A27F8A829D45504 /* stack_min.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stack_min.h; sourceTree = "<group>"; };
 		CF1EBF326A4E5D7AE628AEDF /* job_scheduling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = job_scheduling.h; sourceTree = "<group>"; };
@@ -274,6 +284,7 @@
 				CF1EBF001A7F6487E996B25A /* closestpair_test.cpp */,
 				CF1EBBCD6A44D03A34943F5D /* linkedlist_tests.cpp */,
 				CF1EB3C620D49B831A62D4EF /* boolean_vector_tests.cpp */,
+				CF1EB6AD35DB15447AC199BF /* top_coder_tests.cpp */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -366,6 +377,11 @@
 				CF1EB7A307D2899DC393D460 /* fixed_capacity_bool_vector.h */,
 				CF1EB91EF3129FF73C86DB0E /* max_overlapping_intervals.cpp */,
 				CF1EBE9423C93CBFF7D718B7 /* fixed_capacity_bool_vector.cpp */,
+				CF1EB78FC236F79C24C282C7 /* palindrome.h */,
+				CF1EB7260BC2F033EEEEB825 /* palindrome.cpp */,
+				CF1EBEFCC89A925775D6C1CE /* top_coder_tests.h */,
+				CF1EB6AEEBC912DBBD9D9F81 /* stamp_coloring.cpp */,
+				CF1EB4F1AA847C088D6D1DAC /* colorful_road.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -480,6 +496,10 @@
 				CF1EB30F9731235A60AAE4B3 /* closestpair_test.cpp in Sources */,
 				CF1EB80B6F95456BA51B5907 /* linkedlist_tests.cpp in Sources */,
 				CF1EB2401FAF9441F948496C /* boolean_vector_tests.cpp in Sources */,
+				CF1EBA3DD63803351652F3E8 /* palindrome.cpp in Sources */,
+				CF1EB5F89A222F58A0EB31C5 /* stamp_coloring.cpp in Sources */,
+				CF1EB572E92282FA4AC45461 /* top_coder_tests.cpp in Sources */,
+				CF1EBC5891A89FBA69549F96 /* colorful_road.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

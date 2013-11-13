@@ -49,6 +49,7 @@
 		CF1EBC1E3A2DD48FA5FFD5FE /* string_permute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBFAD3555177536913ADC /* string_permute.cpp */; };
 		CF1EBC57C174724B6BC7325A /* lrucache_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB4DBE6618C7DE29549BB /* lrucache_test.cpp */; };
 		CF1EBC5891A89FBA69549F96 /* colorful_road.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB4F1AA847C088D6D1DAC /* colorful_road.cpp */; };
+		CF1EBCEBBB8DE422CAB9F3A0 /* hash_table_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBC00401BD410132F0549 /* hash_table_tests.cpp */; };
 		CF1EBD16D19D1B48120368C7 /* integer_knapsack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB23BB98ACD97EBCFDA7D /* integer_knapsack.cpp */; };
 		CF1EBD35AA3A9AF8049F4A82 /* graph_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EB1BB2266794C6E42CAAF /* graph_tests.cpp */; };
 		CF1EBD9A5CEA3375B6F3FBF8 /* string_normalize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1EBBEB7F1D3D7DD421BE7B /* string_normalize.cpp */; };
@@ -108,6 +109,7 @@
 		CF1EB1E6F4DF473D8F7280F6 /* max_profit_buy_sell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = max_profit_buy_sell.h; sourceTree = "<group>"; };
 		CF1EB236F15822E518C53A1E /* 10.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 10.txt; sourceTree = "<group>"; };
 		CF1EB23BB98ACD97EBCFDA7D /* integer_knapsack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = integer_knapsack.cpp; sourceTree = "<group>"; };
+		CF1EB24C90DC608643045C5B /* hash_table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash_table.h; sourceTree = "<group>"; };
 		CF1EB26EA7FC3A8A07B8E962 /* kargerMinCut.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kargerMinCut.txt; sourceTree = "<group>"; };
 		CF1EB29D3D2D1E68CFC8A4BC /* binaryheap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binaryheap.h; sourceTree = "<group>"; };
 		CF1EB2A9BDCE5979701AAB82 /* matrix_zero.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix_zero.h; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 		CF1EBBCD6A44D03A34943F5D /* linkedlist_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linkedlist_tests.cpp; sourceTree = "<group>"; };
 		CF1EBBD94FF1E7A5EB94D71C /* lpss.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lpss.h; sourceTree = "<group>"; };
 		CF1EBBEB7F1D3D7DD421BE7B /* string_normalize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string_normalize.cpp; sourceTree = "<group>"; };
+		CF1EBC00401BD410132F0549 /* hash_table_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hash_table_tests.cpp; sourceTree = "<group>"; };
 		CF1EBC14EFE996B3ADD565DD /* heap_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = heap_tests.cpp; sourceTree = "<group>"; };
 		CF1EBC3E5D768E7C5EFBDD00 /* stack_sort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stack_sort.cpp; sourceTree = "<group>"; };
 		CF1EBC45ADD0590B8A7C15B8 /* biggest_interval.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = biggest_interval.cpp; sourceTree = "<group>"; };
@@ -285,6 +288,7 @@
 				CF1EBBCD6A44D03A34943F5D /* linkedlist_tests.cpp */,
 				CF1EB3C620D49B831A62D4EF /* boolean_vector_tests.cpp */,
 				CF1EB6AD35DB15447AC199BF /* top_coder_tests.cpp */,
+				CF1EBC00401BD410132F0549 /* hash_table_tests.cpp */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -382,6 +386,7 @@
 				CF1EBEFCC89A925775D6C1CE /* top_coder_tests.h */,
 				CF1EB6AEEBC912DBBD9D9F81 /* stamp_coloring.cpp */,
 				CF1EB4F1AA847C088D6D1DAC /* colorful_road.cpp */,
+				CF1EB24C90DC608643045C5B /* hash_table.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -500,6 +505,7 @@
 				CF1EB5F89A222F58A0EB31C5 /* stamp_coloring.cpp in Sources */,
 				CF1EB572E92282FA4AC45461 /* top_coder_tests.cpp in Sources */,
 				CF1EBC5891A89FBA69549F96 /* colorful_road.cpp in Sources */,
+				CF1EBCEBBB8DE422CAB9F3A0 /* hash_table_tests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
